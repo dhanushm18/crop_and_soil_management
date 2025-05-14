@@ -1,0 +1,214 @@
+{% extends 'base_new.html' %}
+
+{% block title %}Agriculture Chatbot - Agriculture Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 20px;
+        height: 500px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #chat-messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 20px;
+    }
+
+    .message {
+        margin-bottom: 15px;
+        display: flex;
+    }
+
+    .message.user {
+        justify-content: flex-end;
+    }
+
+    .message-content {
+        max-width: 80%;
+        padding: 12px 18px;
+        border-radius: 18px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .message.user .message-content {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .message.bot .message-content {
+        background-color: #f5f5f5;
+        color: #333;
+    }
+
+    .input-area {
+        display: flex;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-top: 1px solid #eee;
+    }
+
+    #user-input {
+        flex-grow: 1;
+        padding: 12px 20px;
+        border: 1px solid #ddd;
+        border-radius: 30px;
+        margin-right: 10px;
+        font-size: 1rem;
+    }
+
+    #send-btn {
+        background-color: #2e7d32;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    #send-btn:hover {
+        background-color: #005005;
+        transform: translateY(-2px);
+    }
+
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+    }
+
+    .typing-dots {
+        display: flex;
+    }
+
+    .typing-dots span {
+        height: 8px;
+        width: 8px;
+        margin: 0 2px;
+        background-color: #999;
+        border-radius: 50%;
+        display: inline-block;
+        opacity: 0.4;
+    }
+
+    .typing-dots span:nth-child(1) {
+        animation: pulse 1s infinite;
+    }
+
+    .typing-dots span:nth-child(2) {
+        animation: pulse 1s infinite 0.2s;
+    }
+
+    .typing-dots span:nth-child(3) {
+        animation: pulse 1s infinite 0.4s;
+    }
+
+    @keyframes pulse {
+        0% {
+            opacity: 0.4;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        100% {
+            opacity: 0.4;
+            transform: scale(1);
+        }
+    }
+
+    .topic-chip {
+        transition: all 0.3s ease;
+    }
+
+    .topic-chip:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1 class="mb-4">Agriculture Chatbot</h1>
+        <p class="lead">Your AI farming expert assistant</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="chat-container">
+            <div id="chat-messages">
+                <div class="message bot">
+                    <div class="message-content">
+                        <p>Hello! I'm your agriculture expert assistant. How can I help you with farming, crops, soil health, or other agricultural topics today?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Ask about farming, crops, pests, etc...">
+                <button id="send-btn">Send</button>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Suggested Topics</h3>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-success topic-chip" onclick="askQuestion('What are the best practices for organic farming?')">Organic Farming</button>
+                    <button class="btn btn-outline-success topic-chip" onclick="askQuestion('How can I improve soil fertility naturally?')">Soil Fertility</button>
+                    <button class="btn btn-outline-success topic-chip" onclick="askQuestion('What are common tomato plant diseases and how to treat them?')">Plant Diseases</button>
+                    <button class="btn btn-outline-success topic-chip" onclick="askQuestion('How does crop rotation benefit soil health?')">Crop Rotation</button>
+                    <button class="btn btn-outline-success topic-chip" onclick="askQuestion('What are sustainable irrigation methods?')">Irrigation</button>
+                    <button class="btn btn-outline-success topic-chip" onclick="askQuestion('How to control pests without chemicals?')">Pest Control</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">About the Agriculture Chatbot</h3>
+            </div>
+            <div class="card-body">
+                <p>Our Agriculture Chatbot is powered by advanced AI and has been specifically trained to provide information and assistance on agricultural topics.</p>
+
+                <h5>The chatbot can help with:</h5>
+                <ul>
+                    <li>Crop selection and rotation strategies</li>
+                    <li>Soil health management and testing</li>
+                    <li>Pest and disease identification and management</li>
+                    <li>Irrigation and water management</li>
+                    <li>Sustainable and organic farming practices</li>
+                    <li>Weather impacts on agriculture</li>
+                    <li>Livestock management</li>
+                    <li>Farm equipment and technology</li>
+                    <li>Agricultural economics and market trends</li>
+                </ul>
+
+                <div class="alert alert-info">
+                    <p class="mb-0"><strong>Note:</strong> While our chatbot provides accurate information based on current agricultural knowledge, it should not replace professional advice for specific situations. For critical farming decisions, consult with local agricultural experts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- The chatbot functionality is handled by main.js -->
+{% endblock %}

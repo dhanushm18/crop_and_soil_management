@@ -1,0 +1,52 @@
+/* Custom styles for Agriculture Soil Dashboard */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+/* Dashboard cards */
+.dashboard-card {
+    height: 100%;
+}
+
+/* Chart container */
+.chart-container {
+    width: 100%;
+    max-height: 400px;
+}
+
+/* Custom colors for soil health indicators */
+.health-good {
+    color: #28a745;
+}
+
+.health-warning {
+    color: #ffc107;
+}
+
+.health-danger {
+    color: #dc3545;
+}

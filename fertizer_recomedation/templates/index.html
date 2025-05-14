@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fertilizer Recommendation System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h2 class="text-center">Fertilizer Recommendation System</h2>
+                    </div>
+                    <div class="card-body">
+                        {% if error %}
+                        <div class="alert alert-danger">
+                            {{ error }}
+                        </div>
+                        {% endif %}
+                        
+                        <form action="/predict" method="post">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="n_content">Nitrogen Content (N):</label>
+                                        <input type="number" step="0.01" class="form-control" id="n_content" name="n_content" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="p_content">Phosphorous Content (P):</label>
+                                        <input type="number" step="0.01" class="form-control" id="p_content" name="p_content" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="k_content">Potassium Content (K):</label>
+                                        <input type="number" step="0.01" class="form-control" id="k_content" name="k_content" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="temperature">Temperature (°C):</label>
+                                        <input type="number" step="0.01" class="form-control" id="temperature" name="temperature" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="humidity">Humidity (%):</label>
+                                        <input type="number" step="0.01" class="form-control" id="humidity" name="humidity" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="moisture">Soil Moisture:</label>
+                                        <input type="number" step="0.01" class="form-control" id="moisture" name="moisture" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="soil_type">Soil Type:</label>
+                                        <select class="form-control" id="soil_type" name="soil_type" required>
+                                            <option value="" disabled selected>Select Soil Type</option>
+                                            {% for soil_type in soil_types %}
+                                            <option value="{{ soil_type }}">{{ soil_type }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="crop_type">Crop Type:</label>
+                                        <select class="form-control" id="crop_type" name="crop_type" required>
+                                            <option value="" disabled selected>Select Crop Type</option>
+                                            {% for crop_type in crop_types %}
+                                            <option value="{{ crop_type }}">{{ crop_type }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success btn-lg">Get Fertilizer Recommendation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

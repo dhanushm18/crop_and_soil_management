@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease Doctor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2e7d32;
+            text-align: center;
+        }
+        .upload-box {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .healthy {
+            background-color: #e8f5e9;
+        }
+        .diseased {
+            background-color: #ffebee;
+        }
+        .solution {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .error {
+            color: #d32f2f;
+            background-color: #fce4ec;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌱 Plant Disease Doctor</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        <div class="upload-box">
+            <p>Upload a clear photo of a plant leaf:</p>
+            <input type="file" name="file" accept="image/*" required>
+        </div>
+        <button type="submit">Diagnose Plant</button>
+    </form>
+
+    {% if error %}
+    <div class="error">
+        <h3>⚠️ Error</h3>
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+
+    {% if prediction %}
+    <div class="result {% if is_healthy %}healthy{% else %}diseased{% endif %}">
+        <h2>
+            {% if is_healthy %}
+            ✅ Healthy Plant
+            {% else %}
+            🚨 {{ prediction }}
+            {% endif %}
+        </h2>
+        <p>Confidence: {{ confidence }}</p>
+        
+        {% if image_path %}
+        <img src="{{ url_for('static', filename=image_path.split('/')[-1]) }}" alt="Plant leaf">
+        {% endif %}
+        
+        <div class="solution">
+            <h3>Recommended Solution:</h3>
+            <p>{{ solution }}</p>
+            
+            <h3>Prevention Tips:</h3>
+            <ul>
+                {% for tip in tips %}
+                <li>{{ tip }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</body>
+</html>

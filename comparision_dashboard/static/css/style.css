@@ -1,0 +1,123 @@
+/* Custom styles for Multi-Crop Profit Comparison Dashboard */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.card-header {
+    font-weight: bold;
+    padding: 12px 20px;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+.crop-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.crop-row:hover {
+    background-color: #e9ecef;
+}
+
+.form-check-label {
+    cursor: pointer;
+}
+
+#crop-info {
+    min-height: 200px;
+}
+
+footer {
+    margin-top: 50px;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 15px;
+    }
+
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+
+/* Chart container styles */
+canvas {
+    max-width: 100%;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Table highlight for selected crop */
+.table-primary {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+/* About section styling */
+#about {
+    margin-top: 30px;
+}
+
+#about ul {
+    margin-left: 20px;
+}
+
+/* Crop detail page styling */
+.table th {
+    width: 40%;
+}
+
+/* Prediction page styling */
+.prediction-result {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.table-success {
+    background-color: rgba(40, 167, 69, 0.1) !important;
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-color: rgba(255, 193, 7, 0.2);
+    color: #664d03;
+}
+
+/* Add Bootstrap icons */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css");

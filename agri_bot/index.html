@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agriculture Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        header h1 {
+            color: #2e7d32;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: #666;
+        }
+
+        .chat-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .user .message-content {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-top-right-radius: 4px;
+        }
+
+        .bot .message-content {
+            background-color: #f5f5f5;
+            color: #333;
+            border-top-left-radius: 4px;
+        }
+
+        .message-content p {
+            line-height: 1.5;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        #user-input:focus {
+            border-color: #2e7d32;
+        }
+
+        #send-btn {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 0 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        #send-btn:hover {
+            background-color: #1b5e20;
+        }
+
+        .suggestions {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestions h3 {
+            margin-bottom: 15px;
+            color: #2e7d32;
+            font-size: 18px;
+        }
+
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chip {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background-color: #c8e6c9;
+        }
+
+        .typing-indicator {
+            display: flex;
+            padding: 12px 16px;
+        }
+
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: typing 1s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Agriculture Assistant</h1>
+            <p>Your AI farming expert</p>
+        </header>
+        
+        <div class="chat-container">
+            <div id="chat-messages">
+                <div class="message bot">
+                    <div class="message-content">
+                        <p>Hello! I'm your agriculture expert assistant. How can I help you with farming, crops, soil health, or other agricultural topics today?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Ask about farming, crops, pests, etc...">
+                <button id="send-btn">Send</button>
+            </div>
+        </div>
+        
+        <div class="suggestions">
+            <h3>Suggested Topics:</h3>
+            <div class="suggestion-chips">
+                <button class="chip" onclick="askQuestion('How do I improve soil fertility naturally?')">Improve soil fertility</button>
+                <button class="chip" onclick="askQuestion('What are organic methods to control aphids?')">Control aphids</button>
+                <button class="chip" onclick="askQuestion('Best practices for water conservation in farming?')">Water conservation</button>
+                <button class="chip" onclick="askQuestion('How to identify nutrient deficiencies in plants?')">Nutrient deficiencies</button>
+                <button class="chip" onclick="askQuestion('Sustainable crop rotation techniques?')">Crop rotation</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-btn');
+            
+            // Gemini API key
+            const API_KEY = 'AIzaSyApClWYweivPNmL4r2dT_6EwnmrZ1QzLqM';
+            
+            // Function to add a message to the chat
+            function addMessage(message, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+                
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                
+                const messageParagraph = document.createElement('p');
+                messageParagraph.textContent = message;
+                
+                messageContent.appendChild(messageParagraph);
+                messageDiv.appendChild(messageContent);
+                chatMessages.appendChild(messageDiv);
+                
+                // Scroll to the bottom of the chat
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to show typing indicator
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message bot';
+                typingDiv.id = 'typing-indicator';
+                
+                const typingContent = document.createElement('div');
+                typingContent.className = 'typing-indicator';
+                
+                for (let i = 0; i < 3; i++) {
+                    const dot = document.createElement('span');
+                    typingContent.appendChild(dot);
+                }
+                
+                typingDiv.appendChild(typingContent);
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to remove typing indicator
+            function removeTypingIndicator() {
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+            
+            // Function to send a message to the Gemini API
+            async function sendMessage(message) {
+                if (!message.trim()) return;
+                
+                // Add user message to chat
+                addMessage(message, true);
+                
+                // Clear input field
+                userInput.value = '';
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                try {
+                    // Prepare the request to Gemini API
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${API_KEY}`;
+                    
+                    const data = {
+                        contents: [
+                            {
+                                role: "user",
+                                parts: [
+                                    {
+                                        text: "You are an agriculture expert chatbot. Your purpose is to provide farmers and agricultural professionals with accurate information about farming practices, crop management, pest control, soil health, weather impacts, sustainable agriculture, and related topics. Please provide detailed and helpful responses to agricultural queries."
+                                    }
+                                ]
+                            },
+                            {
+                                role: "model",
+                                parts: [
+                                    {
+                                        text: "I'm your agriculture expert assistant, ready to help with farming questions. I can provide information on:\n\n- Crop management and cultivation techniques\n- Pest and disease identification and control\n- Soil health and fertility management\n- Irrigation and water management\n- Weather impacts on agriculture\n- Sustainable and organic farming practices\n- Farm equipment and technology\n- Livestock management\n- Agricultural economics and market trends\n\nWhether you're a small-scale farmer, commercial producer, or gardening enthusiast, I'll do my best to provide accurate, practical information to help you succeed. What agricultural topic can I assist you with today?"
+                                    }
+                                ]
+                            },
+                            {
+                                role: "user",
+                                parts: [
+                                    {
+                                        text: message
+                                    }
+                                ]
+                            }
+                        ],
+                        generationConfig: {
+                            temperature: 0.7,
+                            topP: 0.95,
+                            topK: 40,
+                            maxOutputTokens: 1024,
+                        },
+                        safetySettings: [
+                            {
+                                category: "HARM_CATEGORY_HARASSMENT",
+                                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                            },
+                            {
+                                category: "HARM_CATEGORY_HATE_SPEECH",
+                                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                            },
+                            {
+                                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                            },
+                            {
+                                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                            }
+                        ]
+                    };
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const responseData = await response.json();
+                    
+                    // Remove typing indicator
+                    removeTypingIndicator();
+                    
+                    if (response.ok && responseData.candidates && responseData.candidates[0].content.parts[0].text) {
+                        // Add bot response to chat
+                        addMessage(responseData.candidates[0].content.parts[0].text, false);
+                    } else {
+                        // Add error message
+                        addMessage('Sorry, I encountered an error. Please try again.', false);
+                        console.error('API Error:', responseData);
+                    }
+                } catch (error) {
+                    // Remove typing indicator
+                    removeTypingIndicator();
+                    
+                    // Add error message
+                    addMessage('Sorry, I encountered an error. Please try again.', false);
+                    console.error('Error:', error);
+                }
+            }
+            
+            // Event listener for send button
+            sendButton.addEventListener('click', function() {
+                sendMessage(userInput.value);
+            });
+            
+            // Event listener for Enter key
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage(userInput.value);
+                }
+            });
+            
+            // Function to handle suggestion chip clicks
+            window.askQuestion = function(question) {
+                userInput.value = question;
+                sendMessage(question);
+            };
+        });
+    </script>
+</body>
+</html>

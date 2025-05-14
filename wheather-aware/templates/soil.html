@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Soil Management - Weather-Aware Farming{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Soil Management Recommendations</h1>
+    
+    <!-- Location Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ url_for('soil') }}" method="post" class="row g-3">
+                <div class="col-md-5">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" value="{{ city }}" required>
+                </div>
+                <div class="col-md-5">
+                    <label for="country" class="form-label">Country Code</label>
+                    <input type="text" class="form-control" id="country" name="country" value="{{ country }}" placeholder="e.g., IN, US">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% elif soil_recommendations %}
+    
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle me-2"></i>
+        These soil management recommendations are based on current and forecasted weather conditions for {{ city }}, {{ country }}.
+    </div>
+    
+    <!-- Soil Management Recommendations -->
+    <div class="row">
+        {% for recommendation in soil_recommendations %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="mb-0">{{ recommendation.name }}</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ recommendation.description }}</p>
+                    <h5 class="mt-4">Recommended Practices:</h5>
+                    <ul class="list-group list-group-flush mt-2">
+                        {% for practice in recommendation.practices %}
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            {{ practice }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- General Soil Management Tips -->
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0">General Soil Management Tips</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-seedling text-success me-2"></i>Soil Health</h5>
+                    <ul>
+                        <li>Regularly test your soil to monitor pH and nutrient levels</li>
+                        <li>Add organic matter to improve soil structure and fertility</li>
+                        <li>Practice crop rotation to prevent soil depletion</li>
+                        <li>Use cover crops during fallow periods to protect soil</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="fas fa-tint text-primary me-2"></i>Water Management</h5>
+                    <ul>
+                        <li>Implement efficient irrigation systems to conserve water</li>
+                        <li>Create proper drainage to prevent waterlogging</li>
+                        <li>Use mulch to reduce evaporation and maintain soil moisture</li>
+                        <li>Monitor soil moisture levels regularly</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-bug text-danger me-2"></i>Pest Management</h5>
+                    <ul>
+                        <li>Implement integrated pest management practices</li>
+                        <li>Encourage beneficial insects and organisms</li>
+                        <li>Use crop rotation to break pest cycles</li>
+                        <li>Monitor crops regularly for early pest detection</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="fas fa-leaf text-success me-2"></i>Sustainable Practices</h5>
+                    <ul>
+                        <li>Minimize tillage to preserve soil structure</li>
+                        <li>Use organic fertilizers when possible</li>
+                        <li>Implement contour farming on sloped land</li>
+                        <li>Practice precision agriculture to optimize resource use</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <a href="{{ url_for('weather', city=city, country=country) }}" class="btn btn-primary w-100">
+                <i class="fas fa-cloud-sun me-2"></i>View Weather Details
+            </a>
+        </div>
+        <div class="col-md-6 mb-3">
+            <a href="{{ url_for('crops', city=city, country=country) }}" class="btn btn-success w-100">
+                <i class="fas fa-seedling me-2"></i>Get Crop Recommendations
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        No soil management recommendations available. Please check your location and try again.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

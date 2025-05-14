@@ -1,0 +1,84 @@
+/* Custom styles for Soil Health Assessment Tool */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.progress {
+    height: 20px;
+    border-radius: 10px;
+}
+
+.sample-profile {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.sample-profile:hover {
+    transform: translateY(-5px);
+}
+
+footer {
+    margin-top: 50px;
+}
+
+/* Styling for fertility levels */
+.fertility-high {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.fertility-medium {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.fertility-low {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Quality score progress bar colors */
+.quality-high {
+    background-color: #28a745;
+}
+
+.quality-medium {
+    background-color: #ffc107;
+}
+
+.quality-low {
+    background-color: #dc3545;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+}

@@ -1,0 +1,977 @@
+{% extends 'base.html' %}
+
+{% block title %}Soil Health Analysis - Agriculture Hub{% endblock %}
+
+{% block extra_css %}
+<!-- Add background image for soil health page -->
+<style>
+    .soil-health-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)) ,url("{{ url_for('static', filename='images/soil.png') }}");
+        background-size: cover;
+        background-position: center;
+        padding: 80px 0;
+        margin-bottom: 40px;
+        color: white;
+        text-align: center;
+    }
+
+    .soil-health-hero h1 {
+        font-size: 2.5rem;
+        color: #fff;
+        font-weight: 700;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+    }
+
+    .soil-health-hero p {
+        color: #fff;
+        font-size: 1.1rem;
+        max-width: 800px;
+        margin: 0 auto;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Main Layout Styles */
+    .soil-health-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* Card Styles */
+    .soil-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        background-color: #fff;
+        margin-bottom: 25px;
+        border: none;
+    }
+
+    .soil-card-header {
+        padding: 18px 25px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .soil-card-body {
+        padding: 25px;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        display: block;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .form-control {
+        height: 45px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+        font-size: 15px;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 0 8px 8px 0;
+        color: #555;
+        font-weight: 500;
+    }
+
+    .optimal-range {
+        font-size: 13px;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+
+    /* Button Styles */
+    .btn-soil-analyze {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-soil-analyze:hover {
+        background-color: #3e8e41;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Results Section Styles */
+    .parameter-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .parameter-table th {
+        background-color: #f8f9fa;
+        padding: 15px;
+        font-weight: 600;
+        color: #333;
+        text-align: left;
+        border-bottom: 2px solid #eee;
+    }
+
+    .parameter-table td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+
+    .parameter-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .parameter-name {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .parameter-value {
+        font-weight: 700;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .parameter-unit {
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .optimal-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .progress-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .progress-bar-custom {
+        height: 8px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        flex-grow: 1;
+        margin-right: 10px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 4px;
+    }
+
+    .progress-value {
+        font-weight: 600;
+        min-width: 45px;
+        text-align: right;
+    }
+
+    .status-text {
+        font-weight: 500;
+    }
+
+    /* Soil Health Card Styles */
+    .soil-health-score {
+        text-align: center;
+        padding: 30px 0;
+    }
+
+    .gauge-container {
+        position: relative;
+        width: 180px;
+        height: 90px;
+        margin: 0 auto 20px;
+        overflow: hidden;
+    }
+
+    .gauge-background {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        border: 15px solid #f0f0f0;
+        border-bottom-color: transparent;
+        position: absolute;
+        top: 0;
+    }
+
+    .gauge-fill {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        border: 15px solid;
+        border-bottom-color: transparent !important;
+        position: absolute;
+        top: 0;
+    }
+
+    .gauge-value {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .gauge-label {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .fertility-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .quality-legend {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin: 0 10px;
+    }
+
+    .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+
+    .legend-text {
+        font-size: 14px;
+        color: #555;
+    }
+
+    /* Recommendations Section */
+    .recommendations-section {
+        padding: 0;
+    }
+
+    .recommendations-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #2196F3;
+    }
+
+    .recommendation-item {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-left: 4px solid #2196F3;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 15px;
+    }
+
+    /* Suitable Crops Section */
+    .crops-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #4CAF50;
+    }
+
+    .crop-tag {
+        display: inline-block;
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        padding: 8px 15px;
+        border-radius: 20px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .soil-card-body {
+            padding: 15px;
+        }
+
+        .parameter-table th,
+        .parameter-table td {
+            padding: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<div class="soil-health-hero">
+    <div class="container">
+        <h1>Soil Health Analysis</h1>
+        <p class="lead">
+            Analyze your soil parameters to get a comprehensive assessment, fertility rating, and recommendations
+            for improvement. Make informed decisions about crop selection and soil management.
+        </p>
+    </div>
+</div>
+
+<div class="soil-health-container py-4">
+
+    {% if error %}
+    <div class="alert alert-danger py-3 px-4 mb-4">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 1.5rem;"></i>
+            <div>
+                <strong>Error:</strong> {{ error }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <!-- Input Form Section -->
+        <div class="col-lg-5">
+            <div class="soil-card">
+                <div class="soil-card-header bg-success text-white">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-input-cursor-text me-3" style="font-size: 1.3rem;"></i>
+                        <h5 class="mb-0">Enter Soil Parameters</h5>
+                    </div>
+                </div>
+                <div class="soil-card-body">
+                    <form action="{{ url_for('soil_health_analyze') }}" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nitrogen" class="form-label">Nitrogen (N) Content</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="nitrogen" name="nitrogen"
+                                            min="0" max="100" step="0.1" required
+                                            value="{{ result.nitrogen if result else '' }}"
+                                            placeholder="Enter value">
+                                        <span class="input-group-text">ppm</span>
+                                    </div>
+                                    <div class="optimal-range">Optimal range: 40-80 ppm</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phosphorus" class="form-label">Phosphorus (P) Content</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="phosphorus" name="phosphorus"
+                                            min="0" max="100" step="0.1" required
+                                            value="{{ result.phosphorus if result else '' }}"
+                                            placeholder="Enter value">
+                                        <span class="input-group-text">ppm</span>
+                                    </div>
+                                    <div class="optimal-range">Optimal range: 30-60 ppm</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="potassium" class="form-label">Potassium (K) Content</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="potassium" name="potassium"
+                                            min="0" max="100" step="0.1" required
+                                            value="{{ result.potassium if result else '' }}"
+                                            placeholder="Enter value">
+                                        <span class="input-group-text">ppm</span>
+                                    </div>
+                                    <div class="optimal-range">Optimal range: 40-80 ppm</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ph" class="form-label">pH Level</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="ph" name="ph"
+                                            min="4.0" max="8.5" step="0.1" required
+                                            value="{{ result.ph if result else '' }}"
+                                            placeholder="Enter value">
+                                        <span class="input-group-text">pH</span>
+                                    </div>
+                                    <div class="optimal-range">Optimal range: 6.0-7.0</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="ec" class="form-label">Electrical Conductivity</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="ec" name="ec"
+                                            min="0" max="4" step="0.1" required
+                                            value="{{ result.ec if result else '' }}"
+                                            placeholder="Enter value">
+                                        <span class="input-group-text">dS/m</span>
+                                    </div>
+                                    <div class="optimal-range">Optimal: < 2.0 dS/m</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="moisture" class="form-label">Moisture Content</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="moisture" name="moisture"
+                                            min="0" max="100" step="0.1" required
+                                            value="{{ result.moisture if result else '' }}"
+                                            placeholder="Enter value">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <div class="optimal-range">Optimal: 50-60%</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="organic_matter" class="form-label">Organic Matter</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="organic_matter" name="organic_matter"
+                                            min="0" max="10" step="0.1" required
+                                            value="{{ result.organic_matter if result else '' }}"
+                                            placeholder="Enter value">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <div class="optimal-range">Optimal: > 3%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn-soil-analyze">
+                                <i class="bi bi-search me-2"></i>Analyze Soil Health
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Soil Parameters Table (Only shown when results are available) -->
+            {% if result %}
+            <div class="soil-card">
+                <div class="soil-card-header bg-info text-white">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-bar-chart-line me-3" style="font-size: 1.3rem;"></i>
+                        <h5 class="mb-0">Soil Parameters</h5>
+                    </div>
+                </div>
+                <div class="soil-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="parameter-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th style="text-align: center;">Value</th>
+                                    <th style="text-align: center;">Optimal Range</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="parameter-indicator" style="background-color: #4CAF50;"></span>
+                                            <span class="parameter-name">Nitrogen (N)</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="parameter-value">{{ result.nitrogen }}</span>
+                                        <span class="parameter-unit">ppm</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="optimal-badge" style="background-color: #e8f5e9; color: #2e7d32;">40-80 ppm</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-container">
+                                            <div class="progress-bar-custom">
+                                                <div class="progress-fill"
+                                                    style="width: {{ (result.nitrogen / 100) * 100 }}%; background-color:
+                                                    {% if (result.nitrogen / 80) * 100 >= 90 %}#4CAF50
+                                                    {% elif (result.nitrogen / 80) * 100 >= 60 %}#FFC107
+                                                    {% else %}#F44336{% endif %};">
+                                                </div>
+                                            </div>
+                                            <span class="progress-value">{{ (result.nitrogen / 80) * 100 | round }}%</span>
+                                        </div>
+                                        <div>
+                                            {% if (result.nitrogen / 80) * 100 >= 90 %}
+                                                <span class="status-text" style="color: #4CAF50;">Optimal level</span>
+                                            {% elif (result.nitrogen / 80) * 100 >= 60 %}
+                                                <span class="status-text" style="color: #FFC107;">Moderate level</span>
+                                            {% else %}
+                                                <span class="status-text" style="color: #F44336;">Deficient</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="parameter-indicator" style="background-color: #2196F3;"></span>
+                                            <span class="parameter-name">Phosphorus (P)</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="parameter-value">{{ result.phosphorus }}</span>
+                                        <span class="parameter-unit">ppm</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="optimal-badge" style="background-color: #e3f2fd; color: #2196F3;">30-60 ppm</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-container">
+                                            <div class="progress-bar-custom">
+                                                <div class="progress-fill"
+                                                    style="width: {{ (result.phosphorus / 100) * 100 }}%; background-color:
+                                                    {% if (result.phosphorus / 60) * 100 >= 90 %}#4CAF50
+                                                    {% elif (result.phosphorus / 60) * 100 >= 60 %}#FFC107
+                                                    {% else %}#F44336{% endif %};">
+                                                </div>
+                                            </div>
+                                            <span class="progress-value">{{ (result.phosphorus / 60) * 100 | round }}%</span>
+                                        </div>
+                                        <div>
+                                            {% if (result.phosphorus / 60) * 100 >= 90 %}
+                                                <span class="status-text" style="color: #4CAF50;">Optimal level</span>
+                                            {% elif (result.phosphorus / 60) * 100 >= 60 %}
+                                                <span class="status-text" style="color: #FFC107;">Moderate level</span>
+                                            {% else %}
+                                                <span class="status-text" style="color: #F44336;">Deficient</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="parameter-indicator" style="background-color: #FF9800;"></span>
+                                            <span class="parameter-name">Potassium (K)</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="parameter-value">{{ result.potassium }}</span>
+                                        <span class="parameter-unit">ppm</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="optimal-badge" style="background-color: #fff3cd; color: #FF9800;">40-80 ppm</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-container">
+                                            <div class="progress-bar-custom">
+                                                <div class="progress-fill"
+                                                    style="width: {{ (result.potassium / 100) * 100 }}%; background-color:
+                                                    {% if (result.potassium / 80) * 100 >= 90 %}#4CAF50
+                                                    {% elif (result.potassium / 80) * 100 >= 60 %}#FFC107
+                                                    {% else %}#F44336{% endif %};">
+                                                </div>
+                                            </div>
+                                            <span class="progress-value">{{ (result.potassium / 80) * 100 | round }}%</span>
+                                        </div>
+                                        <div>
+                                            {% if (result.potassium / 80) * 100 >= 90 %}
+                                                <span class="status-text" style="color: #4CAF50;">Optimal level</span>
+                                            {% elif (result.potassium / 80) * 100 >= 60 %}
+                                                <span class="status-text" style="color: #FFC107;">Moderate level</span>
+                                            {% else %}
+                                                <span class="status-text" style="color: #F44336;">Deficient</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="parameter-indicator" style="background-color: #9C27B0;"></span>
+                                            <span class="parameter-name">pH Level</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="parameter-value">{{ result.ph }}</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="optimal-badge" style="background-color: #f3e5f5; color: #9C27B0;">6.0-7.0</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-container">
+                                            <div class="progress-bar-custom">
+                                                <div class="progress-fill"
+                                                    style="width: {{ ((result.ph - 4) / 4.5) * 100 }}%; background-color:
+                                                    {% if result.ph >= 6.0 and result.ph <= 7.0 %}#4CAF50
+                                                    {% elif result.ph > 5.5 and result.ph < 7.5 %}#FFC107
+                                                    {% else %}#F44336{% endif %};">
+                                                </div>
+                                            </div>
+                                            <span class="progress-value">{{ ((result.ph - 4) / 4.5) * 100 | round }}%</span>
+                                        </div>
+                                        <div>
+                                            {% if result.ph >= 6.0 and result.ph <= 7.0 %}
+                                                <span class="status-text" style="color: #4CAF50;">Optimal range</span>
+                                            {% elif result.ph > 5.5 and result.ph < 7.5 %}
+                                                <span class="status-text" style="color: #FFC107;">Acceptable range</span>
+                                            {% else %}
+                                                <span class="status-text" style="color: #F44336;">Out of optimal range</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="parameter-indicator" style="background-color: #00BCD4;"></span>
+                                            <span class="parameter-name">Electrical Conductivity</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="parameter-value">{{ result.ec }}</span>
+                                        <span class="parameter-unit">dS/m</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="optimal-badge" style="background-color: #e0f7fa; color: #00BCD4;">< 2.0 dS/m</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-container">
+                                            <div class="progress-bar-custom">
+                                                <div class="progress-fill"
+                                                    style="width: {{ (result.ec / 4) * 100 }}%; background-color:
+                                                    {% if result.ec < 2.0 %}#4CAF50
+                                                    {% elif result.ec < 3.0 %}#FFC107
+                                                    {% else %}#F44336{% endif %};">
+                                                </div>
+                                            </div>
+                                            <span class="progress-value">{{ (result.ec / 2) * 100 | round }}%</span>
+                                        </div>
+                                        <div>
+                                            {% if result.ec < 2.0 %}
+                                                <span class="status-text" style="color: #4CAF50;">Safe level</span>
+                                            {% elif result.ec < 3.0 %}
+                                                <span class="status-text" style="color: #FFC107;">Moderate salinity</span>
+                                            {% else %}
+                                                <span class="status-text" style="color: #F44336;">High salinity</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="parameter-indicator" style="background-color: #03A9F4;"></span>
+                                            <span class="parameter-name">Moisture Content</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="parameter-value">{{ result.moisture }}</span>
+                                        <span class="parameter-unit">%</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="optimal-badge" style="background-color: #e1f5fe; color: #03A9F4;">50-60%</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-container">
+                                            <div class="progress-bar-custom">
+                                                <div class="progress-fill"
+                                                    style="width: {{ result.moisture }}%; background-color:
+                                                    {% if result.moisture >= 50 and result.moisture <= 60 %}#4CAF50
+                                                    {% elif result.moisture >= 40 and result.moisture <= 70 %}#FFC107
+                                                    {% else %}#F44336{% endif %};">
+                                                </div>
+                                            </div>
+                                            <span class="progress-value">{{ result.moisture }}%</span>
+                                        </div>
+                                        <div>
+                                            {% if result.moisture >= 50 and result.moisture <= 60 %}
+                                                <span class="status-text" style="color: #4CAF50;">Optimal moisture</span>
+                                            {% elif result.moisture >= 40 and result.moisture <= 70 %}
+                                                <span class="status-text" style="color: #FFC107;">Acceptable moisture</span>
+                                            {% elif result.moisture < 40 %}
+                                                <span class="status-text" style="color: #F44336;">Too dry</span>
+                                            {% else %}
+                                                <span class="status-text" style="color: #F44336;">Too wet</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="parameter-indicator" style="background-color: #8BC34A;"></span>
+                                            <span class="parameter-name">Organic Matter</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="parameter-value">{{ result.organic_matter }}</span>
+                                        <span class="parameter-unit">%</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="optimal-badge" style="background-color: #f1f8e9; color: #8BC34A;">> 3%</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-container">
+                                            <div class="progress-bar-custom">
+                                                <div class="progress-fill"
+                                                    style="width: {{ (result.organic_matter / 10) * 100 }}%; background-color:
+                                                    {% if result.organic_matter > 3 %}#4CAF50
+                                                    {% elif result.organic_matter > 2 %}#FFC107
+                                                    {% else %}#F44336{% endif %};">
+                                                </div>
+                                            </div>
+                                            <span class="progress-value">{{ (result.organic_matter / 3) * 100 | round }}%</span>
+                                        </div>
+                                        <div>
+                                            {% if result.organic_matter > 3 %}
+                                                <span class="status-text" style="color: #4CAF50;">Good organic content</span>
+                                            {% elif result.organic_matter > 2 %}
+                                                <span class="status-text" style="color: #FFC107;">Moderate organic content</span>
+                                            {% else %}
+                                                <span class="status-text" style="color: #F44336;">Low organic content</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Soil Health Card Section (Only shown when results are available) -->
+        {% if result %}
+        <div class="col-lg-7">
+            <div class="soil-card">
+                <div class="soil-card-header bg-success text-white">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-card-checklist me-3" style="font-size: 1.3rem;"></i>
+                        <h5 class="mb-0">Soil Health Card</h5>
+                    </div>
+                </div>
+                <div class="soil-card-body">
+                    <div class="row">
+                        <!-- Soil Quality Score Section -->
+                        <div class="col-md-4">
+                            <div class="soil-health-score">
+                                <!-- Gauge -->
+                                <div class="gauge-container">
+                                    <div class="gauge-background"></div>
+                                    <div class="gauge-fill"
+                                        style="border-color: {% if result.quality_score >= 70 %}#4CAF50
+                                        {% elif result.quality_score >= 40 %}#FFC107
+                                        {% else %}#F44336{% endif %};
+                                        transform: rotate({{ (result.quality_score / 100) * 180 }}deg);">
+                                    </div>
+                                    <div class="gauge-value"
+                                        style="color: {% if result.quality_score >= 70 %}#4CAF50
+                                        {% elif result.quality_score >= 40 %}#FFC107
+                                        {% else %}#F44336{% endif %};">
+                                        {{ result.quality_score }}
+                                    </div>
+                                </div>
+
+                                <div class="gauge-label">Soil Quality Score</div>
+
+                                <!-- Fertility Badge -->
+                                <div class="fertility-badge"
+                                    style="background-color: {% if result.fertility_class == 'success' %}#e8f5e9
+                                    {% elif result.fertility_class == 'warning' %}#fff3cd
+                                    {% else %}#ffebee{% endif %};
+                                    color: {% if result.fertility_class == 'success' %}#4CAF50
+                                    {% elif result.fertility_class == 'warning' %}#FFC107
+                                    {% else %}#F44336{% endif %};">
+                                    <i class="bi {% if result.fertility_class == 'success' %}bi-check-circle-fill
+                                        {% elif result.fertility_class == 'warning' %}bi-exclamation-triangle-fill
+                                        {% else %}bi-x-circle-fill{% endif %} me-2"></i>
+                                    {{ result.fertility_level }} Fertility
+                                </div>
+
+                                <!-- Quality Legend -->
+                                <div class="quality-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #4CAF50;"></div>
+                                        <div class="legend-text">70-100: Excellent</div>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #FFC107;"></div>
+                                        <div class="legend-text">40-69: Moderate</div>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #F44336;"></div>
+                                        <div class="legend-text">0-39: Poor</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="h-100 d-flex flex-column">
+                                <!-- Suitable Crops Section -->
+                                <div class="mb-4">
+                                    <h6 class="crops-title">
+                                        <i class="bi bi-grid-3x3-gap-fill me-2"></i>Suitable Crops
+                                    </h6>
+                                    <div>
+                                        {% if result.suitable_crops %}
+                                            <div class="d-flex flex-wrap">
+                                                {% for crop in result.suitable_crops %}
+                                                    <div class="crop-tag">
+                                                        <i class="bi bi-check2 me-1"></i>{{ crop }}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            <p class="text-muted fst-italic">No specific crop recommendations available for this soil profile.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Recommendations Section -->
+                                <div class="flex-grow-1">
+                                    <h6 class="recommendations-title">
+                                        <i class="bi bi-lightbulb-fill me-2"></i>Improvement Recommendations
+                                    </h6>
+                                    <div class="recommendations-section">
+                                        {% if result.recommendations %}
+                                            {% for recommendation in result.recommendations %}
+                                                <div class="recommendation-item">
+                                                    {{ recommendation }}
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <p class="text-muted fst-italic">No specific recommendations available.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Understanding Your Soil Health Section -->
+            <div class="soil-card">
+                <div class="soil-card-header" style="background-color: #e3f2fd;">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-3" style="font-size: 1.3rem; color: #2196F3;"></i>
+                        <h5 class="mb-0" style="color: #2196F3;">Understanding Your Soil Health</h5>
+                    </div>
+                </div>
+                <div class="soil-card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; color: #4CAF50;">
+                                <i class="bi bi-bar-chart-line me-2"></i>Key Soil Parameters
+                            </h6>
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 24px; padding: 6px 6px 6px 0; vertical-align: middle; border-top: none;">
+                                            <div style="width: 10px; height: 10px; background-color: #4CAF50; border-radius: 50%;"></div>
+                                        </td>
+                                        <td style="width: 100px; padding: 6px; vertical-align: middle; font-weight: 600; color: #333; border-top: none;">Nitrogen:</td>
+                                        <td style="padding: 6px; vertical-align: middle; border-top: none;">Essential for leaf growth (40-80 ppm)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 24px; padding: 6px 6px 6px 0; vertical-align: middle;">
+                                            <div style="width: 10px; height: 10px; background-color: #2196F3; border-radius: 50%;"></div>
+                                        </td>
+                                        <td style="width: 100px; padding: 6px; vertical-align: middle; font-weight: 600; color: #333;">Phosphorus:</td>
+                                        <td style="padding: 6px; vertical-align: middle;">Root development (30-60 ppm)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 24px; padding: 6px 6px 6px 0; vertical-align: middle;">
+                                            <div style="width: 10px; height: 10px; background-color: #FF9800; border-radius: 50%;"></div>
+                                        </td>
+                                        <td style="width: 100px; padding: 6px; vertical-align: middle; font-weight: 600; color: #333;">Potassium:</td>
+                                        <td style="padding: 6px; vertical-align: middle;">Overall plant health (40-80 ppm)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 24px; padding: 6px 6px 6px 0; vertical-align: middle;">
+                                            <div style="width: 10px; height: 10px; background-color: #9C27B0; border-radius: 50%;"></div>
+                                        </td>
+                                        <td style="width: 100px; padding: 6px; vertical-align: middle; font-weight: 600; color: #333;">pH:</td>
+                                        <td style="padding: 6px; vertical-align: middle;">Affects nutrient availability (6.0-7.0)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; color: #2196F3;">
+                                <i class="bi bi-clipboard-data me-2"></i>Soil Health Indicators
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div style="background-color: #e8f5e9; border-radius: 8px; padding: 15px; height: 100%;">
+                                        <h6 style="font-size: 0.95rem; font-weight: 600; color: #2e7d32; margin-bottom: 10px;">
+                                            <i class="bi bi-check-circle-fill me-2"></i>Good Soil Health
+                                        </h6>
+                                        <ul style="padding-left: 20px; margin-bottom: 0;">
+                                            <li>Balanced NPK levels</li>
+                                            <li>Neutral pH (6.0-7.0)</li>
+                                            <li>High organic matter</li>
+                                            <li>Good moisture retention</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div style="background-color: #fff3cd; border-radius: 8px; padding: 15px; height: 100%;">
+                                        <h6 style="font-size: 0.95rem; font-weight: 600; color: #856404; margin-bottom: 10px;">
+                                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Poor Soil Health
+                                        </h6>
+                                        <ul style="padding-left: 20px; margin-bottom: 0;">
+                                            <li>Nutrient deficiencies</li>
+                                            <li>Extreme pH levels</li>
+                                            <li>Low organic matter</li>
+                                            <li>High salt content (EC)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

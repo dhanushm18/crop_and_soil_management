@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Fertilizer Recommendation Result - Agriculture Hub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1 class="mb-4">Fertilizer Recommendation Result</h1>
+        <p class="lead">Based on your soil parameters and crop type</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Recommended Fertilizer</h3>
+            </div>
+            <div class="card-body text-center">
+                <h2 class="mb-4">{{ fertilizer }}</h2>
+                
+                <div class="alert alert-success">
+                    <p class="mb-0">This fertilizer is recommended based on your soil's nutrient content, environmental conditions, and crop type.</p>
+                </div>
+                
+                <h4 class="mt-4 mb-3">Your Input Parameters</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Nitrogen (N)</th>
+                            <td>{{ n_content }} mg/kg</td>
+                            <th>Phosphorus (P)</th>
+                            <td>{{ p_content }} mg/kg</td>
+                        </tr>
+                        <tr>
+                            <th>Potassium (K)</th>
+                            <td>{{ k_content }} mg/kg</td>
+                            <th>Temperature</th>
+                            <td>{{ temperature }} °C</td>
+                        </tr>
+                        <tr>
+                            <th>Humidity</th>
+                            <td>{{ humidity }}%</td>
+                            <th>Soil Moisture</th>
+                            <td>{{ moisture }}%</td>
+                        </tr>
+                        <tr>
+                            <th>Soil Type</th>
+                            <td>{{ soil_type }}</td>
+                            <th>Crop Type</th>
+                            <td>{{ crop_type }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Understanding Your Recommendation</h3>
+            </div>
+            <div class="card-body">
+                <h5>About {{ fertilizer }} Fertilizer</h5>
+                {% if fertilizer == '10-26-26' %}
+                <p>This is a balanced NPK fertilizer with a ratio of 10% nitrogen, 26% phosphorus, and 26% potassium. It's particularly good for flowering and fruiting stages of plant growth.</p>
+                {% elif fertilizer == '14-35-14' %}
+                <p>This fertilizer has 14% nitrogen, 35% phosphorus, and 14% potassium. The high phosphorus content makes it excellent for root development and flowering.</p>
+                {% elif fertilizer == '17-17-17' %}
+                <p>A perfectly balanced fertilizer with equal parts (17%) of nitrogen, phosphorus, and potassium. Good for general purpose use throughout the growing season.</p>
+                {% elif fertilizer == '20-20' %}
+                <p>This fertilizer contains 20% nitrogen and 20% phosphorus, with no potassium. It's suitable for leafy growth and early development stages.</p>
+                {% elif fertilizer == '28-28' %}
+                <p>Contains 28% nitrogen and 28% phosphorus. This high-nitrogen, high-phosphorus mix promotes vigorous vegetative growth and root development.</p>
+                {% elif fertilizer == 'DAP' %}
+                <p>Diammonium Phosphate (DAP) is high in phosphorus and contains some nitrogen. It's excellent for promoting root growth and plant establishment.</p>
+                {% elif fertilizer == 'Urea' %}
+                <p>Urea is a high-nitrogen fertilizer (typically 46% nitrogen) that promotes leafy, vegetative growth. It's one of the most concentrated nitrogen sources available.</p>
+                {% else %}
+                <p>This fertilizer is recommended based on the specific nutrient needs of your soil and crop type.</p>
+                {% endif %}
+                
+                <h5 class="mt-4">Application Tips</h5>
+                <ul>
+                    <li>Always follow the manufacturer's recommended application rates</li>
+                    <li>Apply fertilizer when the soil is moist but not wet</li>
+                    <li>Avoid applying fertilizer during the hottest part of the day</li>
+                    <li>Consider split applications for better nutrient uptake</li>
+                    <li>Keep fertilizer away from direct contact with plant stems and leaves</li>
+                </ul>
+                
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0"><strong>Note:</strong> This recommendation is based on machine learning predictions. Consider consulting with local agricultural experts for specific advice for your region.</p>
+                </div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <a href="{{ url_for('fertilizer_recommendation') }}" class="btn btn-success">Make Another Recommendation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,516 @@
+{% extends 'base_new.html' %}
+
+{% block title %}Weather-Aware Farming - Agriculture Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #2E7D32;
+        --primary-light: #4CAF50;
+        --primary-dark: #1B5E20;
+        --secondary: #1976D2;
+        --secondary-light: #42A5F5;
+        --accent: #FF9800;
+        --light-bg: #F5F7FA;
+        --dark-text: #263238;
+        --light-text: #FFFFFF;
+        --gray-text: #607D8B;
+        --border-radius: 12px;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Modern Hero Section */
+    .weather-hero {
+        background: 
+                    url("{{ url_for('static', filename='images/wheather2.png') }}");
+        background-size: cover;
+        background-position: center;
+        color: var(--light-text);
+        padding: 80px 0 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .weather-hero::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        background: linear-gradient(to bottom right, transparent 49%, var(--light-bg) 50%);
+    }
+
+    .weather-hero h1 {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        letter-spacing: -0.5px;
+    }
+
+    .weather-hero p {
+        font-size: 1.2rem;
+        color: black;
+        max-width: 700px;
+        margin: 0 auto 30px;
+        opacity: 0.9;
+        line-height: 1.6;
+    }
+
+    /* Search Form */
+    .search-form {
+        background-color: var(--light-text);
+        border-radius: var(--border-radius);
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        z-index: 10;
+        margin-top: -40px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .search-form .form-control {
+        border: 1px solid #E0E0E0;
+        padding: 12px 15px;
+        height: auto;
+        font-size: 1rem;
+    }
+
+    .search-form .form-control:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+    }
+
+    .search-form .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+        padding: 12px 20px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .search-form .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+    }
+
+    /* Crop Selection */
+    .crop-option {
+        cursor: pointer;
+        border-radius: var(--border-radius);
+        border: 2px solid #E0E0E0;
+        padding: 15px;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .crop-option:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--card-shadow);
+    }
+
+    .crop-option.selected {
+        border-color: var(--primary);
+        background-color: rgba(76, 175, 80, 0.05);
+        box-shadow: var(--card-shadow);
+    }
+
+    .crop-option img {
+        height: 60px;
+        width: 60px;
+        object-fit: contain;
+        margin-bottom: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .crop-option:hover img {
+        transform: scale(1.1);
+    }
+
+    .crop-option h6 {
+        font-weight: 600;
+        color: var(--dark-text);
+        margin-bottom: 0;
+    }
+
+    /* Process Steps */
+    .process-section {
+        background-color: var(--light-bg);
+        padding: 60px 0;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+    }
+
+    .section-title h2 {
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 15px;
+    }
+
+    .section-title p {
+        color: var(--gray-text);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .process-step {
+        text-align: center;
+        padding: 30px 20px;
+        background-color: var(--light-text);
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        height: 100%;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .process-step:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--hover-shadow);
+    }
+
+    .step-number {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 30px;
+        background-color: var(--primary);
+        color: var(--light-text);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .step-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 1.8rem;
+    }
+
+    .step-icon.blue {
+        background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+        color: var(--secondary);
+    }
+
+    .step-icon.green {
+        background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+        color: var(--primary);
+    }
+
+    .step-icon.orange {
+        background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+        color: var(--accent);
+    }
+
+    .process-step h4 {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--dark-text);
+    }
+
+    .process-step p {
+        color: var(--gray-text);
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+
+    /* Benefits Section */
+    .benefits-section {
+        padding: 60px 0;
+    }
+
+    .benefit-card {
+        padding: 25px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        height: 100%;
+        transition: all 0.3s ease;
+        border-top: 4px solid var(--primary);
+    }
+
+    .benefit-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--hover-shadow);
+    }
+
+    .benefit-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
+
+    .benefit-card h4 {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--dark-text);
+    }
+
+    .benefit-card p {
+        color: var(--gray-text);
+        margin-bottom: 0;
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="weather-hero">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 text-center">
+                <span class="badge bg-light text-success mb-3 px-3 py-2">Smart Weather Integration</span>
+                <h1>Weather-Aware Farming</h1>
+                <p>Make smarter farming decisions with personalized weather-based recommendations for your crops</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Form Section -->
+<div class="container">
+    <div class="search-form">
+        <form action="{{ url_for('weather_forecast') }}" method="post" id="weatherForm">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label for="location" class="form-label fw-medium">Your Location</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-geo-alt text-primary"></i>
+                        </span>
+                        <input type="text" class="form-control" id="location" name="location" placeholder="Enter city or district" required>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-medium">Select Crop</label>
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <div class="crop-option" id="rice-option" onclick="selectCrop('Rice')">
+                                <img src="static/images/paddy.png" alt="Rice">
+                                <h6>Rice</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="crop-option" id="wheat-option" onclick="selectCrop('Wheat')">
+                                <img src="static/images/wheat.png" alt="Wheat">
+                                <h6>Wheat</h6>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="crop-option" id="cotton-option" onclick="selectCrop('Cotton')">
+                                <img src="static/images/cotton.png" alt="Cotton">
+                                <h6>Cotton</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="crop_type" name="crop_type" value="Rice">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 py-3">
+                        <i class="bi bi-search me-2"></i>Get Forecast
+                    </button>
+                </div>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-danger mt-3" role="alert">
+                <div class="d-flex">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>{{ error }}</div>
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Process Section -->
+<section class="process-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>How It Works</h2>
+            <p>Our intelligent system analyzes weather patterns to provide personalized farming recommendations</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon blue">
+                        <i class="bi bi-cloud-download"></i>
+                    </div>
+                    <h4>Weather Data</h4>
+                    <p>We collect accurate 7-day weather forecasts specific to your farming location</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon green">
+                        <i class="bi bi-gear"></i>
+                    </div>
+                    <h4>Smart Analysis</h4>
+                    <p>Our algorithms analyze weather patterns and match them to your crop's specific requirements</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon orange">
+                        <i class="bi bi-list-check"></i>
+                    </div>
+                    <h4>Recommendations</h4>
+                    <p>Receive personalized farming advice to optimize your crop yield and resource management</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="benefits-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Key Benefits</h2>
+            <p>Weather-aware farming helps you make smarter decisions and improve your agricultural outcomes</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="benefit-card">
+                    <div class="benefit-icon" style="background-color: #E3F2FD; color: #1976D2;">
+                        <i class="bi bi-droplet-fill"></i>
+                    </div>
+                    <h4>Water Management</h4>
+                    <p>Optimize irrigation based on rainfall forecasts to prevent waterlogging and drought stress</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="benefit-card">
+                    <div class="benefit-icon" style="background-color: #E8F5E9; color: #2E7D32;">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h4>Increased Yield</h4>
+                    <p>Improve crop production with weather-informed decisions and optimal growing conditions</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="benefit-card">
+                    <div class="benefit-icon" style="background-color: #FFF3E0; color: #FF9800;">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>Risk Management</h4>
+                    <p>Take preventative measures against extreme weather events to protect your crops</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="benefit-card">
+                    <div class="benefit-icon" style="background-color: #F5F5F5; color: #607D8B;">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                    <h4>Cost Efficiency</h4>
+                    <p>Apply inputs only when conditions are favorable to reduce waste and optimize resources</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set Rice as default selected crop
+        selectCrop('Rice');
+
+        // Add scroll animation for elements
+        const animateElements = document.querySelectorAll('.animate-fade-in, .animate-fade-in-left, .animate-fade-in-right, .animate-zoom-in');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        animateElements.forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.observe(element);
+        });
+    });
+
+    function selectCrop(cropName) {
+        // Update hidden input value
+        document.getElementById('crop_type').value = cropName;
+
+        // Remove selected class from all crop options
+        const cropOptions = document.querySelectorAll('.crop-option');
+        cropOptions.forEach(option => {
+            option.classList.remove('selected');
+        });
+
+        // Add selected class to the clicked option
+        const selectedOption = document.getElementById(cropName.toLowerCase() + '-option');
+        if (selectedOption) {
+            selectedOption.classList.add('selected');
+        }
+    }
+
+    // No need for additional hover effects as they're handled by CSS
+
+    // Add hover effects to benefit items
+    const benefitItems = document.querySelectorAll('.benefit-item');
+    benefitItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            const icon = this.querySelector('.benefit-title i');
+            if (icon) {
+                icon.style.transform = 'scale(1.2)';
+            }
+        });
+
+        item.addEventListener('mouseleave', function() {
+            const icon = this.querySelector('.benefit-title i');
+            if (icon) {
+                icon.style.transform = 'scale(1)';
+            }
+        });
+    });
+</script>
+
+<!-- Additional styles are already included in the main CSS block -->
+{% endblock %}

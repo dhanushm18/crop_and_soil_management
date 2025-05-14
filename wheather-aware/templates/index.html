@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 mb-4">Weather-Aware Crop & Soil Management</h1>
+        <p class="lead mb-5">Make informed farming decisions based on current and forecasted weather conditions</p>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form action="{{ url_for('weather') }}" method="post" class="location-form">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="city" placeholder="Enter City" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="country" placeholder="Country Code (e.g., IN)">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Go</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Our Features</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-cloud-sun fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Weather Forecasts</h3>
+                        <p class="card-text">Access current weather data and 5-day forecasts for your location to plan your farming activities.</p>
+                        <a href="{{ url_for('weather') }}" class="btn btn-outline-primary mt-3">Check Weather</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-seedling fa-3x mb-3 text-success"></i>
+                        <h3 class="card-title">Crop Recommendations</h3>
+                        <p class="card-text">Get personalized crop recommendations based on current and forecasted weather conditions.</p>
+                        <a href="{{ url_for('crops') }}" class="btn btn-outline-success mt-3">View Recommendations</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-mountain fa-3x mb-3 text-warning"></i>
+                        <h3 class="card-title">Soil Management</h3>
+                        <p class="card-text">Receive soil management advice tailored to upcoming weather conditions for optimal crop growth.</p>
+                        <a href="{{ url_for('soil') }}" class="btn btn-outline-warning mt-3">Get Soil Advice</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4 text-center">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-map-marker-alt fa-2x"></i>
+                </div>
+                <h4>Enter Location</h4>
+                <p>Provide your city and country to get localized information</p>
+            </div>
+            <div class="col-md-3 mb-4 text-center">
+                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-cloud-download-alt fa-2x"></i>
+                </div>
+                <h4>Weather Analysis</h4>
+                <p>We analyze current and forecasted weather conditions</p>
+            </div>
+            <div class="col-md-3 mb-4 text-center">
+                <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-cogs fa-2x"></i>
+                </div>
+                <h4>Smart Algorithms</h4>
+                <p>Our algorithms process weather data to generate recommendations</p>
+            </div>
+            <div class="col-md-3 mb-4 text-center">
+                <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-lightbulb fa-2x"></i>
+                </div>
+                <h4>Personalized Advice</h4>
+                <p>Receive tailored crop and soil management recommendations</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

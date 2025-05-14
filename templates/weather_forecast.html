@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+
+{% block title %}Weather Forecast & Recommendations - Agriculture Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .weather-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 60px 0;
+        margin-bottom: 40px;
+    }
+
+    .forecast-card {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .forecast-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .forecast-date {
+        background-color: #2e7d32;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .forecast-icon {
+        font-size: 2.5rem;
+        margin: 15px 0;
+        color: #2e7d32;
+    }
+
+    .forecast-temp {
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .forecast-condition {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .forecast-details {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+
+    .forecast-detail {
+        text-align: center;
+    }
+
+    .forecast-detail-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .forecast-detail-value {
+        font-weight: 600;
+    }
+
+    .recommendation-card {
+        border-left: 4px solid;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .recommendation-card.warning {
+        border-left-color: #f44336;
+    }
+
+    .recommendation-card.info {
+        border-left-color: #2196f3;
+    }
+
+    .recommendation-card.success {
+        border-left-color: #4caf50;
+    }
+
+    .recommendation-header {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+    }
+
+    .recommendation-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+
+    .recommendation-icon.warning {
+        background-color: rgba(244, 67, 54, 0.1);
+        color: #f44336;
+    }
+
+    .recommendation-icon.info {
+        background-color: rgba(33, 150, 243, 0.1);
+        color: #2196f3;
+    }
+
+    .recommendation-icon.success {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #4caf50;
+    }
+
+    .recommendation-title {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .recommendation-body {
+        padding: 15px 20px;
+    }
+
+    .recommendation-description {
+        margin-bottom: 15px;
+    }
+
+    .action-list {
+        padding-left: 20px;
+    }
+
+    .action-list li {
+        margin-bottom: 8px;
+    }
+
+    .print-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #2e7d32;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        z-index: 100;
+        transition: all 0.3s ease;
+    }
+
+    .print-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .print-btn i {
+        font-size: 1.5rem;
+    }
+
+    @media print {
+        .weather-header, .navbar, .footer, .print-btn {
+            display: none !important;
+        }
+
+        .container {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="weather-header" style="padding: 30px 0; margin-bottom: 20px; background-color: #f8f9fa;">
+    <div class="container text-center">
+        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 10px; color: #2e7d32;">Weather Forecast & Recommendations</h1>
+        <p style="font-size: 1.1rem; margin-bottom: 0; color: #6c757d;">7-day forecast for {{ weather_data.location }} - {{ crop_type }}</p>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container py-4">
+    <!-- Location and Crop Info Banner -->
+    <div class="card border-0 shadow mb-4" style="border-radius: 10px; overflow: hidden;">
+        <div class="card-body p-3 bg-light">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="mb-1" style="font-weight: 600; color: #2e7d32;">{{ weather_data.location }}</h5>
+                    <p class="mb-0">Crop: <span style="font-weight: 600;">{{ crop_type }}</span></p>
+                </div>
+                <div class="text-end">
+                    <a href="{{ url_for('weather_aware') }}" class="btn btn-outline-success me-2">
+                        <i class="bi bi-arrow-left me-2"></i>Back
+                    </a>
+                    <a href="javascript:window.print()" class="btn btn-success">
+                        <i class="bi bi-printer me-2"></i>Print
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7-Day Forecast -->
+    <div class="card border-0 shadow mb-4" style="border-radius: 10px; overflow: hidden;">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0"><i class="bi bi-calendar-week me-2"></i>7-Day Weather Forecast</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                {% for day in weather_data.forecast %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="forecast-card" style="height: 100%; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); overflow: hidden;">
+                        <div class="forecast-date" style="background-color: #2e7d32; color: white; padding: 10px; text-align: center; font-weight: 600; font-size: 1rem;">
+                            {{ day.date }}
+                        </div>
+                        <div class="card-body text-center p-3">
+                            <div style="font-size: 3rem; margin: 15px 0; color: #2e7d32;">
+                                {% if 'Sunny' in day.condition %}
+                                    <i class="bi bi-sun"></i>
+                                {% elif 'Partly Cloudy' in day.condition %}
+                                    <i class="bi bi-cloud-sun"></i>
+                                {% elif 'Cloudy' in day.condition %}
+                                    <i class="bi bi-cloud"></i>
+                                {% elif 'Light Rain' in day.condition %}
+                                    <i class="bi bi-cloud-drizzle"></i>
+                                {% elif 'Heavy Rain' in day.condition %}
+                                    <i class="bi bi-cloud-rain-heavy"></i>
+                                {% else %}
+                                    <i class="bi bi-cloud"></i>
+                                {% endif %}
+                            </div>
+                            <div style="font-size: 1.8rem; font-weight: 700; margin-bottom: 5px;">{{ day.temperature }}°C</div>
+                            <div style="font-weight: 600; margin-bottom: 15px; font-size: 1rem;">{{ day.condition }}</div>
+
+                            <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="color: #6c757d; margin-bottom: 5px;">Humidity</div>
+                                    <div style="font-weight: 600;">{{ day.humidity }}%</div>
+                                </div>
+                                <div style="text-align: center; flex: 1; border-left: 1px solid #eee; border-right: 1px solid #eee;">
+                                    <div style="color: #6c757d; margin-bottom: 5px;">Wind</div>
+                                    <div style="font-weight: 600;">{{ day.wind_speed }} km/h</div>
+                                </div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="color: #6c757d; margin-bottom: 5px;">Precip</div>
+                                    <div style="font-weight: 600;">{{ day.precipitation }} mm</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="card border-0 shadow mb-4" style="border-radius: 10px; overflow: hidden;">
+        <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Farming Recommendations</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="accordion" id="recommendationsAccordion">
+                {% for rec in recommendations %}
+                <div class="accordion-item border-0 border-bottom">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                        <button class="accordion-button {% if not loop.first %}collapsed{% endif %} py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="{% if loop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ loop.index }}">
+                            <div class="d-flex align-items-center" style="width: 100%;">
+                                <div style="width: 36px; height: 36px; min-width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;
+                                    {% if rec.type == 'warning' %}
+                                        background-color: rgba(244, 67, 54, 0.1); color: #f44336;
+                                    {% elif rec.type == 'info' %}
+                                        background-color: rgba(33, 150, 243, 0.1); color: #2196f3;
+                                    {% else %}
+                                        background-color: rgba(76, 175, 80, 0.1); color: #4caf50;
+                                    {% endif %}
+                                ">
+                                    {% if rec.type == 'warning' %}
+                                        <i class="bi bi-exclamation-triangle" style="font-size: 1.1rem;"></i>
+                                    {% elif rec.type == 'info' %}
+                                        <i class="bi bi-info-circle" style="font-size: 1.1rem;"></i>
+                                    {% else %}
+                                        <i class="bi bi-check-circle" style="font-size: 1.1rem;"></i>
+                                    {% endif %}
+                                </div>
+                                <span style="font-weight: 600; font-size: 1.1rem;">{{ rec.title }}</span>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#recommendationsAccordion">
+                        <div class="accordion-body py-4">
+                            <div class="container-fluid px-4">
+                                <p class="mb-3">{{ rec.description }}</p>
+                                <ul class="mb-0" style="padding-left: 20px;">
+                                    {% for action in rec.actions %}
+                                        <li class="mb-2">{{ action }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Plan -->
+    <div class="card border-0 shadow mb-4" style="border-radius: 10px; overflow: hidden;">
+        <div class="card-header bg-warning text-dark py-3">
+            <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Next Steps</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div style="background-color: #fff8e1; border-radius: 10px; padding: 20px; height: 100%; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+                        <div class="d-flex align-items-start mb-4">
+                            <div style="width: 32px; height: 32px; min-width: 32px; background: #ff9800; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; margin-top: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                <span style="font-size: 1rem; font-weight: 600;">1</span>
+                            </div>
+                            <p style="margin-bottom: 0; line-height: 1.5;">Review the weather forecast and recommendations daily as conditions may change.</p>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <div style="width: 32px; height: 32px; min-width: 32px; background: #ff9800; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; margin-top: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                <span style="font-size: 1rem; font-weight: 600;">2</span>
+                            </div>
+                            <p style="margin-bottom: 0; line-height: 1.5;">Prioritize actions based on the current growth stage of your {{ crop_type }}.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div style="background-color: #fff8e1; border-radius: 10px; padding: 20px; height: 100%; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+                        <div class="d-flex align-items-start mb-4">
+                            <div style="width: 32px; height: 32px; min-width: 32px; background: #ff9800; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; margin-top: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                <span style="font-size: 1rem; font-weight: 600;">3</span>
+                            </div>
+                            <p style="margin-bottom: 0; line-height: 1.5;">Implement preventative measures for any weather alerts or warnings.</p>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <div style="width: 32px; height: 32px; min-width: 32px; background: #ff9800; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; margin-top: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                <span style="font-size: 1rem; font-weight: 600;">4</span>
+                            </div>
+                            <p style="margin-bottom: 0; line-height: 1.5;">Adjust irrigation schedules based on precipitation forecasts.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Button -->
+    <div class="d-none d-print-none">
+        <a href="javascript:window.print()" class="print-btn" style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background-color: #2e7d32; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 100; text-decoration: none;">
+            <i class="bi bi-printer" style="font-size: 1.5rem;"></i>
+        </a>
+    </div>
+</div>
+{% endblock %}

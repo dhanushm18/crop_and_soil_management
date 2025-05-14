@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Crop Recommendations - Weather-Aware Farming{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Crop Recommendations</h1>
+    
+    <!-- Location Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ url_for('crops') }}" method="post" class="row g-3">
+                <div class="col-md-5">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" value="{{ city }}" required>
+                </div>
+                <div class="col-md-5">
+                    <label for="country" class="form-label">Country Code</label>
+                    <input type="text" class="form-control" id="country" name="country" value="{{ country }}" placeholder="e.g., IN, US">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% elif crop_recommendations %}
+    
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle me-2"></i>
+        These recommendations are based on current and forecasted weather conditions for {{ city }}, {{ country }}.
+        The crops are ranked by their suitability score (0-100).
+    </div>
+    
+    <!-- Top Recommendations -->
+    <h2 class="mb-4">Top Recommendations</h2>
+    <div class="row">
+        {% for crop_name, crop_info in crop_recommendations.items() %}
+        {% if loop.index <= 3 %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 crop-card border-success">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">{{ crop_name|title }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="display-4 mb-2">{{ crop_info.score }}</div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ crop_info.score }}%" 
+                                aria-valuenow="{{ crop_info.score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">Suitability Score</small>
+                    </div>
+                    <p>{{ crop_info.description }}</p>
+                    <h5 class="mt-3">Why this crop?</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for reason in crop_info.reasons %}
+                        <li class="list-group-item">
+                            {% if "optimal" in reason or "suitable" in reason %}
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            {% elif "acceptable" in reason %}
+                            <i class="fas fa-exclamation-circle text-warning me-2"></i>
+                            {% else %}
+                            <i class="fas fa-times-circle text-danger me-2"></i>
+                            {% endif %}
+                            {{ reason }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Other Options -->
+    <h2 class="mb-4">Other Options</h2>
+    <div class="row">
+        {% for crop_name, crop_info in crop_recommendations.items() %}
+        {% if loop.index > 3 %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 crop-card">
+                <div class="card-header">
+                    <h3 class="mb-0">{{ crop_name|title }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="display-4 mb-2">{{ crop_info.score }}</div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar" style="width: {{ crop_info.score }}%" 
+                                aria-valuenow="{{ crop_info.score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">Suitability Score</small>
+                    </div>
+                    <p>{{ crop_info.description }}</p>
+                    <h5 class="mt-3">Why this crop?</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for reason in crop_info.reasons %}
+                        <li class="list-group-item">
+                            {% if "optimal" in reason or "suitable" in reason %}
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            {% elif "acceptable" in reason %}
+                            <i class="fas fa-exclamation-circle text-warning me-2"></i>
+                            {% else %}
+                            <i class="fas fa-times-circle text-danger me-2"></i>
+                            {% endif %}
+                            {{ reason }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <a href="{{ url_for('weather', city=city, country=country) }}" class="btn btn-primary w-100">
+                <i class="fas fa-cloud-sun me-2"></i>View Weather Details
+            </a>
+        </div>
+        <div class="col-md-6 mb-3">
+            <a href="{{ url_for('soil', city=city, country=country) }}" class="btn btn-warning w-100">
+                <i class="fas fa-mountain me-2"></i>Get Soil Management Advice
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        No crop recommendations available. Please check your location and try again.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

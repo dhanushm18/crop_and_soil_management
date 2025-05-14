@@ -1,0 +1,898 @@
+{% extends 'base_new.html' %}
+
+{% block title %}Crop Comparison Dashboard - Agriculture Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Dashboard Header */
+    .dashboard-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 6rem 0 4rem;
+        margin-bottom: var(--spacing-xl);
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(27, 94, 32, 0.4), rgba(76, 175, 80, 0.1));
+        z-index: 1;
+    }
+
+    .dashboard-header-content {
+        position: relative;
+        z-index: 3;
+    }
+
+    .dashboard-header h1 {
+        font-size: var(--font-size-xxl);
+        font-weight: 700;
+        margin-bottom: var(--spacing-md);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        letter-spacing: 0.5px;
+        color: var(--text-on-primary);
+        position: relative;
+        display: inline-block;
+    }
+
+    .dashboard-header h1::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: var(--secondary-gradient);
+        border-radius: 2px;
+    }
+
+    .dashboard-header p {
+        font-size: var(--font-size-lg);
+        max-width: 800px;
+        margin: 1.5rem auto 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        opacity: 0.95;
+        color: var(--text-on-primary);
+        font-weight: 300;
+        line-height: 1.7;
+    }
+
+    /* Dashboard Cards */
+    .dashboard-card {
+        margin-bottom: var(--spacing-lg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        transition: var(--transition-normal);
+        overflow: hidden;
+    }
+
+    .dashboard-card:hover {
+        box-shadow: var(--hover-shadow);
+        transform: translateY(-3px);
+    }
+
+    .dashboard-card .card-header {
+        font-weight: 600;
+        padding: var(--spacing-md) var(--spacing-lg);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .dashboard-card .card-body {
+        padding: var(--spacing-lg);
+    }
+
+    /* Table Styles */
+    .table-responsive {
+        overflow-x: auto;
+        width: 100%;
+        margin-bottom: 1rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .comparison-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed;
+    }
+
+    .comparison-table th {
+        background-color: #f8f9fa;
+        color: #212529;
+        font-weight: 600;
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 2px solid #4CAF50;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .comparison-table td {
+        padding: 0.75rem;
+        border-bottom: 1px solid #dee2e6;
+        color: #495057;
+        white-space: nowrap;
+    }
+
+    .crop-row {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .crop-row:hover {
+        background-color: #e8f5e9;
+    }
+
+    .crop-row.selected {
+        background-color: #e8f5e9;
+    }
+
+    /* ROI Column Highlight */
+    .roi-column {
+        background-color: #fff3cd;
+        color: #fd7e14;
+        font-weight: 600;
+    }
+
+    /* Responsive Table Fixes */
+    @media (max-width: 992px) {
+        .table-responsive {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .table th, .table td {
+            min-width: 100px;
+        }
+    }
+
+    /* Form Elements */
+    .form-check-input:checked + .form-check-label {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .form-check {
+        padding: var(--spacing-sm) 0;
+        transition: var(--transition-normal);
+    }
+
+    .form-check:hover {
+        background-color: var(--background-accent);
+        border-radius: var(--border-radius-sm);
+        padding-left: var(--spacing-sm);
+    }
+
+    /* Chart Containers */
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    /* Section Titles */
+    .section-title {
+        position: relative;
+        display: inline-block;
+        margin-bottom: var(--spacing-lg);
+        font-family: var(--font-accent);
+        color: var(--text-primary);
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: var(--primary-gradient);
+        border-radius: 3px;
+    }
+
+    .text-center .section-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    /* Table Sorting Styles */
+    .sort-icon {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.8rem;
+    }
+
+    .sort-icon:hover {
+        color: var(--primary-color) !important;
+    }
+
+    .highlight-sort {
+        animation: highlightRow 1s ease;
+    }
+
+    @keyframes highlightRow {
+        0% { background-color: rgba(76, 175, 80, 0.2); }
+        100% { background-color: transparent; }
+    }
+
+    .highlight-roi {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .highlight-roi:hover {
+        background-color: rgba(255, 152, 0, 0.1) !important;
+    }
+
+    /* Yield Predictor */
+    .yield-predictor {
+        background-color: var(--background-white);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-lg);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+    }
+
+    /* Custom Card Headers */
+    .card-header-primary {
+        background: var(--primary-gradient);
+        color: var(--text-on-primary);
+    }
+
+    .card-header-secondary {
+        background: var(--secondary-gradient);
+        color: var(--text-primary);
+    }
+
+    .card-header-tertiary {
+        background: var(--tertiary-gradient);
+        color: var(--text-on-primary);
+    }
+
+    .card-header-accent {
+        background-color: var(--background-accent);
+        color: var(--text-primary);
+    }
+
+    /* Info Box */
+    .info-box {
+        background-color: var(--background-accent);
+        border-radius: var(--border-radius-sm);
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .info-box h5 {
+        color: var(--primary-color);
+        margin-bottom: var(--spacing-sm);
+        font-weight: 600;
+    }
+
+    .info-box p {
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-sm);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3" style="max-width: 1400px;">
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                <div class="card-header bg-success text-white py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Multi-Crop Profit Comparison Dashboard</h4>
+                        <div class="d-flex">
+                            <span class="badge bg-light text-dark me-2" style="font-size: 0.8rem;"><i class="bi bi-info-circle me-1"></i> Compare crops</span>
+                            <span class="badge bg-light text-dark" style="font-size: 0.8rem;"><i class="bi bi-graph-up me-1"></i> Predict yields</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-8 p-3 border-end">
+                            <p class="mb-0" style="font-size: 0.9rem;">
+                                Compare different crops to determine the most profitable option for your farm.
+                                Select crops to visualize their profitability metrics and make informed decisions.
+                            </p>
+                        </div>
+                        <div class="col-md-4 p-3 bg-light">
+                            <div class="d-flex flex-wrap" style="gap: 5px; font-size: 0.8rem;">
+                                <div class="d-flex align-items-center me-2">
+                                    <i class="bi bi-1-circle-fill text-success me-1"></i>
+                                    <span>Select crops</span>
+                                </div>
+                                <div class="d-flex align-items-center me-2">
+                                    <i class="bi bi-2-circle-fill text-success me-1"></i>
+                                    <span>View charts</span>
+                                </div>
+                                <div class="d-flex align-items-center me-2">
+                                    <i class="bi bi-3-circle-fill text-success me-1"></i>
+                                    <span>See details</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-4-circle-fill text-success me-1"></i>
+                                    <span>Predict yield</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-2">
+        <div class="col-md-4">
+            <div class="row g-3">
+                <!-- Crop Selection Card -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 8px; overflow: hidden;">
+                        <div class="card-header py-2" style="background: linear-gradient(to right, #0D47A1, #2196F3); border: none;">
+                            <div class="d-flex align-items-center">
+                                <div style="width: 28px; height: 28px; background-color: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                    <i class="bi bi-check-square text-white" style="font-size: 0.9rem;"></i>
+                                </div>
+                                <h6 class="mb-0 text-white">Select Crops</h6>
+                            </div>
+                        </div>
+                        <div class="card-body p-3" style="background-color: #f0f7ff;">
+                            <form id="crop-selection-form">
+                                <div style="max-height: 180px; overflow-y: auto; font-size: 0.9rem;">
+                                    {% for crop in crops %}
+                                    <div class="form-check mb-1 ps-1" style="border-radius: 4px; transition: all 0.2s ease;">
+                                        <input class="form-check-input crop-checkbox" type="checkbox" value="{{ crop.id }}" id="crop-{{ crop.id }}" style="border-color: #90CAF9;">
+                                        <label class="form-check-label" for="crop-{{ crop.id }}" style="font-weight: 500; color: #0D47A1;">
+                                            {{ crop.name }} <span style="font-size: 0.8rem; color: #5C6BC0;">({{ crop.suitable_season }})</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-grid mt-3">
+                                    <button type="button" id="compare-btn" class="btn btn-primary btn-sm" style="background: linear-gradient(to right, #0D47A1, #2196F3); border: none; box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);">
+                                        <i class="bi bi-bar-chart-line me-1"></i> Compare Selected Crops
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Crop Information Card -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                        <div class="card-header py-2" style="background: linear-gradient(to right, #2E7D32, #4CAF50); border: none;">
+                            <div class="d-flex align-items-center">
+                                <div style="width: 28px; height: 28px; background-color: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                    <i class="bi bi-info-circle text-white" style="font-size: 0.9rem;"></i>
+                                </div>
+                                <h6 class="mb-0 text-white">Crop Information</h6>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="crop-info" class="p-3" style="min-height: 350px; display: flex; align-items: center; justify-content: center; background-color: #f9f9f9; border-radius: 8px;">
+                                <div style="width: 100%; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden;">
+                                    <!-- Default Header -->
+                                    <div style="background: linear-gradient(to right, #2E7D32, #4CAF50); padding: 15px; text-align: center; color: white;">
+                                        <h5 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 5px;">Select a Crop</h5>
+                                        <div style="font-size: 0.85rem; opacity: 0.9;">View detailed information</div>
+                                    </div>
+
+                                    <!-- Instructions -->
+                                    <div style="padding: 20px; text-align: center;">
+                                        <div style="width: 60px; height: 60px; background-color: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 2px 10px rgba(76, 175, 80, 0.2);">
+                                            <i class="bi bi-grid-3x3-gap text-success" style="font-size: 1.5rem;"></i>
+                                        </div>
+                                        <p style="font-size: 0.9rem; color: #555; line-height: 1.5; margin-bottom: 0;">
+                                            Click on any crop in the table to view detailed information about its growing requirements, profitability, and return on investment.
+                                        </p>
+                                    </div>
+
+                                    <!-- Sample Metrics -->
+                                    <div style="display: flex; border-top: 1px solid #e9ecef;">
+                                        <div style="flex: 1; padding: 12px; text-align: center; border-right: 1px solid #e9ecef;">
+                                            <div style="font-size: 0.75rem; color: #666; margin-bottom: 5px;">Growing Period</div>
+                                            <div style="font-size: 0.9rem; color: #aaa;">
+                                                <i class="bi bi-calendar-fill me-1" style="font-size: 0.8rem;"></i>
+                                                Select a crop
+                                            </div>
+                                        </div>
+                                        <div style="flex: 1; padding: 12px; text-align: center;">
+                                            <div style="font-size: 0.75rem; color: #666; margin-bottom: 5px;">Return on Investment</div>
+                                            <div style="font-size: 0.9rem; color: #aaa;">
+                                                <i class="bi bi-graph-up me-1" style="font-size: 0.8rem;"></i>
+                                                Select a crop
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yield Predictor Card -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                        <div class="card-header py-2" style="background: linear-gradient(to right, #FF9800, #FFC107); border: none;">
+                            <div class="d-flex align-items-center">
+                                <div style="width: 28px; height: 28px; background-color: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                    <i class="bi bi-calculator text-white" style="font-size: 0.9rem;"></i>
+                                </div>
+                                <h6 class="mb-0 text-white">Yield Predictor</h6>
+                            </div>
+                        </div>
+                        <div class="card-body p-3" style="background-color: #fff9e6;">
+                            <form action="{{ url_for('predict_crop_yield') }}" method="post">
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <label for="crop_name" class="form-label mb-1" style="font-size: 0.8rem; font-weight: 500; color: #664d03;">Crop</label>
+                                        <select class="form-select form-select-sm" id="crop_name" name="crop_name" required style="border-color: #FFB74D; background-color: white;">
+                                            <option value="" selected disabled>Select a crop</option>
+                                            {% for crop in crops %}
+                                            <option value="{{ crop.name }}">{{ crop.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label for="soil_type" class="form-label mb-1" style="font-size: 0.8rem; font-weight: 500; color: #664d03;">Soil Type</label>
+                                        <select class="form-select form-select-sm" id="soil_type" name="soil_type" required style="border-color: #FFB74D; background-color: white;">
+                                            <option value="" selected disabled>Select soil</option>
+                                            <option value="Clay">Clay</option>
+                                            <option value="Loamy">Loamy</option>
+                                            <option value="Sandy">Sandy</option>
+                                            <option value="Black">Black</option>
+                                            <option value="Red">Red</option>
+                                            <option value="Sandy Loam">Sandy Loam</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label for="season" class="form-label mb-1" style="font-size: 0.8rem; font-weight: 500; color: #664d03;">Season</label>
+                                        <select class="form-select form-select-sm" id="season" name="season" required style="border-color: #FFB74D; background-color: white;">
+                                            <option value="" selected disabled>Select season</option>
+                                            <option value="Kharif">Kharif</option>
+                                            <option value="Rabi">Rabi</option>
+                                            <option value="Zaid">Zaid</option>
+                                            <option value="Year-round">Year-round</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label for="water_level" class="form-label mb-1" style="font-size: 0.8rem; font-weight: 500; color: #664d03;">Water Level</label>
+                                        <select class="form-select form-select-sm" id="water_level" name="water_level" required style="border-color: #FFB74D; background-color: white;">
+                                            <option value="" selected disabled>Select level</option>
+                                            <option value="Low">Low</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="High">High</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label for="fertilizer_level" class="form-label mb-1" style="font-size: 0.8rem; font-weight: 500; color: #664d03;">Fertilizer</label>
+                                        <select class="form-select form-select-sm" id="fertilizer_level" name="fertilizer_level" required style="border-color: #FFB74D; background-color: white;">
+                                            <option value="" selected disabled>Select level</option>
+                                            <option value="Low">Low</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="High">High</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mt-3">
+                                    <button type="submit" class="btn btn-warning btn-sm" style="background: linear-gradient(to right, #FF9800, #FFC107); border: none; box-shadow: 0 2px 5px rgba(255, 152, 0, 0.3);">
+                                        <i class="bi bi-calculator me-1"></i> Predict Yield
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="row g-3">
+                <!-- Charts Row -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                        <div class="card-header py-2" style="background: linear-gradient(to right, #2E7D32, #4CAF50); border: none;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div style="width: 28px; height: 28px; background-color: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                        <i class="bi bi-graph-up text-white" style="font-size: 0.9rem;"></i>
+                                    </div>
+                                    <h6 class="mb-0 text-white">Crop Comparison Charts</h6>
+                                </div>
+                                <span class="badge" style="font-size: 0.75rem; background-color: rgba(255,255,255,0.3); color: white;">Select crops to compare</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="row g-0">
+                                <!-- Profit Chart -->
+                                <div class="col-md-6 p-3 border-end" style="background-color: #f8f9fa;">
+                                    <h6 class="text-center mb-2" style="font-size: 0.9rem; color: #2E7D32; font-weight: 600;">Profit per Acre (₹)</h6>
+                                    <div style="height: 180px; position: relative;">
+                                        <canvas id="profit-chart"></canvas>
+                                    </div>
+                                </div>
+                                <!-- ROI Chart -->
+                                <div class="col-md-6 p-3" style="background-color: #fff9e6;">
+                                    <h6 class="text-center mb-2" style="font-size: 0.9rem; color: #FF9800; font-weight: 600;">Return on Investment (%)</h6>
+                                    <div style="height: 180px; position: relative;">
+                                        <canvas id="roi-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                        <div class="card-header bg-dark text-white py-2">
+                            <h6 class="mb-0"><i class="bi bi-table me-2"></i>Crop Comparison Table</h6>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="table-responsive" style="max-height: 250px; overflow-y: auto; overflow-x: auto; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                                <table class="table table-sm table-hover mb-0" style="font-size: 0.85rem; width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0;">
+                                    <thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 1;">
+                                        <tr>
+                                            <th style="width: 15%; text-align: left; padding: 10px; border-bottom: 2px solid #4CAF50;">
+                                                <div class="d-flex align-items-center">
+                                                    <span>Crop</span>
+                                                    <i class="bi bi-arrow-down-up ms-1 text-muted sort-icon" data-sort="name"></i>
+                                                </div>
+                                            </th>
+                                            <th style="width: 12%; text-align: right; padding: 10px; border-bottom: 2px solid #4CAF50;">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <span>Cost/Acre</span>
+                                                    <i class="bi bi-arrow-down-up ms-1 text-muted sort-icon" data-sort="cost"></i>
+                                                </div>
+                                            </th>
+                                            <th style="width: 12%; text-align: right; padding: 10px; border-bottom: 2px solid #4CAF50;">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <span>Yield/Acre</span>
+                                                    <i class="bi bi-arrow-down-up ms-1 text-muted sort-icon" data-sort="yield"></i>
+                                                </div>
+                                            </th>
+                                            <th style="width: 10%; text-align: right; padding: 10px; border-bottom: 2px solid #4CAF50;">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <span>Price/kg</span>
+                                                    <i class="bi bi-arrow-down-up ms-1 text-muted sort-icon" data-sort="price"></i>
+                                                </div>
+                                            </th>
+                                            <th style="width: 12%; text-align: right; padding: 10px; border-bottom: 2px solid #4CAF50;">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <span>Revenue</span>
+                                                    <i class="bi bi-arrow-down-up ms-1 text-muted sort-icon" data-sort="revenue"></i>
+                                                </div>
+                                            </th>
+                                            <th style="width: 12%; text-align: right; padding: 10px; border-bottom: 2px solid #4CAF50;">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <span>Profit</span>
+                                                    <i class="bi bi-arrow-down-up ms-1 text-muted sort-icon" data-sort="profit"></i>
+                                                </div>
+                                            </th>
+                                            <th style="width: 12%; text-align: center; padding: 10px; border-bottom: 2px solid #FF9800;" class="roi-column">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <span>ROI (%)</span>
+                                                    <i class="bi bi-arrow-down-up ms-1 text-muted sort-icon" data-sort="roi"></i>
+                                                </div>
+                                            </th>
+                                            <th style="width: 15%; text-align: center; padding: 10px; border-bottom: 2px solid #4CAF50;">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <span>Period</span>
+                                                    <i class="bi bi-arrow-down-up ms-1 text-muted sort-icon" data-sort="period"></i>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comparison-table-body">
+                                        {% for crop in crops %}
+                                        {% set is_best_roi = crop.roi == crops|map(attribute='roi')|list|max %}
+                                        {% set is_best_profit = crop.profit == crops|map(attribute='profit')|list|max %}
+                                        {% set is_fastest = crop.growing_period == crops|map(attribute='growing_period')|list|min %}
+                                        <tr class="crop-row {% if loop.index % 2 == 0 %}bg-light{% endif %} {% if is_best_roi %}highlight-roi{% endif %}"
+                                            data-crop-id="{{ crop.id }}"
+                                            style="cursor: pointer; {% if is_best_roi %}border-left: 3px solid #FF9800;{% endif %}">
+                                            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 8px 10px; border-bottom: 1px solid #e9ecef;">
+                                                <div class="d-flex align-items-center">
+                                                    <strong>{{ crop.name }}</strong>
+                                                    <div class="ms-2">
+                                                        {% if is_best_roi %}
+                                                        <span class="badge bg-warning text-dark me-1" style="font-size: 0.7rem;">Best ROI</span>
+                                                        {% endif %}
+                                                        {% if is_fastest %}
+                                                        <span class="badge bg-info text-dark me-1" style="font-size: 0.7rem;">Fastest</span>
+                                                        {% endif %}
+                                                        <span class="badge season-badge" style="font-size: 0.7rem; background-color: #e9ecef;"></span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="white-space: nowrap; text-align: right; padding: 8px 10px; border-bottom: 1px solid #e9ecef;">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <span>₹{{ crop.cost_per_acre }}</span>
+                                                    <div class="ms-2" style="width: 30px; height: 4px; background-color: #e9ecef; border-radius: 2px; overflow: hidden;">
+                                                        {% set cost_percent = (crop.cost_per_acre / (crops|map(attribute='cost_per_acre')|list|max)) * 100 %}
+                                                        <div style="width: {{ cost_percent }}%; height: 100%; background-color: #6c757d;"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="white-space: nowrap; text-align: right; padding: 8px 10px; border-bottom: 1px solid #e9ecef;">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <span>{{ crop.yield_per_acre }} kg</span>
+                                                    <div class="ms-2" style="width: 30px; height: 4px; background-color: #e9ecef; border-radius: 2px; overflow: hidden;">
+                                                        {% set yield_percent = (crop.yield_per_acre / (crops|map(attribute='yield_per_acre')|list|max)) * 100 %}
+                                                        <div style="width: {{ yield_percent }}%; height: 100%; background-color: #17a2b8;"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="white-space: nowrap; text-align: right; padding: 8px 10px; border-bottom: 1px solid #e9ecef;">₹{{ crop.price_per_kg }}</td>
+                                            <td style="white-space: nowrap; text-align: right; padding: 8px 10px; border-bottom: 1px solid #e9ecef;">₹{{ crop.revenue }}</td>
+                                            <td style="white-space: nowrap; text-align: right; padding: 8px 10px; border-bottom: 1px solid #e9ecef;">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <span style="color: #28a745; font-weight: 500;">₹{{ crop.profit }}</span>
+                                                    {% if is_best_profit %}
+                                                    <i class="bi bi-trophy-fill ms-1 text-success"></i>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            <td style="white-space: nowrap; text-align: center; padding: 8px 10px; border-bottom: 1px solid #e9ecef;" class="roi-column">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <span style="font-weight: 600; display: inline-block; min-width: 60px;">{{ "%.2f"|format(crop.roi) }}%</span>
+                                                    <div class="ms-2" style="width: 30px; height: 4px; background-color: #fff3cd; border-radius: 2px; overflow: hidden;">
+                                                        {% set roi_percent = (crop.roi / (crops|map(attribute='roi')|list|max)) * 100 %}
+                                                        <div style="width: {{ roi_percent }}%; height: 100%; background-color: #fd7e14;"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style="white-space: nowrap; text-align: center; padding: 8px 10px; border-bottom: 1px solid #e9ecef;">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <span>{{ crop.growing_period }} days</span>
+                                                    {% if is_fastest %}
+                                                    <i class="bi bi-lightning-fill ms-1 text-info"></i>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2 px-2">
+                                <div class="seasonal-filters">
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Season filters">
+                                        <button type="button" class="btn btn-outline-success active season-filter" data-season="all">All Seasons</button>
+                                        <button type="button" class="btn btn-outline-success season-filter" data-season="kharif">Kharif</button>
+                                        <button type="button" class="btn btn-outline-success season-filter" data-season="rabi">Rabi</button>
+                                        <button type="button" class="btn btn-outline-success season-filter" data-season="zaid">Zaid</button>
+                                    </div>
+                                </div>
+                                <span class="badge bg-light text-dark" style="font-size: 0.8rem;">
+                                    <i class="bi bi-info-circle me-1 text-primary"></i>Click on any crop row to view detailed information
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if prediction_result %}
+    <div class="row g-3 mt-2">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                <div class="card-header bg-success text-white py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="bi bi-graph-up-arrow me-2"></i>{{ prediction_result.crop_name }} Yield Prediction Results</h6>
+                        <span class="badge bg-light text-dark" style="font-size: 0.8rem;">Based on your inputs</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <!-- Growing Conditions -->
+                        <div class="col-md-3 p-2 border-end">
+                            <h6 class="text-center mb-2" style="font-size: 0.9rem;">Growing Conditions</h6>
+                            <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem;">
+                                <span class="text-muted">Soil Type:</span>
+                                <span class="fw-medium">{{ prediction_result.soil_type }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem;">
+                                <span class="text-muted">Water Level:</span>
+                                <span class="fw-medium">{{ prediction_result.water_level }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem;">
+                                <span class="text-muted">Fertilizer:</span>
+                                <span class="fw-medium">{{ prediction_result.fertilizer_level }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between" style="font-size: 0.85rem;">
+                                <span class="text-muted">Season:</span>
+                                <span class="fw-medium">{{ prediction_result.season }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Yield Prediction -->
+                        <div class="col-md-3 p-2 border-end">
+                            <h6 class="text-center mb-2" style="font-size: 0.9rem;">Yield Prediction</h6>
+                            <div class="text-center mb-2">
+                                <span style="font-size: 1.5rem; font-weight: 600; color: #28a745;">{{ prediction_result.yield_per_acre }}</span>
+                                <span style="font-size: 0.85rem; color: #6c757d;">kg/acre</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem;">
+                                <span class="text-muted">Base Yield:</span>
+                                <span class="fw-medium">{{ prediction_result.base_yield }} kg/acre</span>
+                            </div>
+                            <div class="d-flex justify-content-between" style="font-size: 0.85rem;">
+                                <span class="text-muted">Yield Change:</span>
+                                {% set yield_change = ((prediction_result.yield_per_acre - prediction_result.base_yield) / prediction_result.base_yield * 100) | round(1) %}
+                                {% if yield_change > 0 %}
+                                    <span style="color: #28a745; font-weight: 500;">+{{ yield_change }}%</span>
+                                {% elif yield_change < 0 %}
+                                    <span style="color: #dc3545; font-weight: 500;">{{ yield_change }}%</span>
+                                {% else %}
+                                    <span>0%</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Financial Projections -->
+                        <div class="col-md-3 p-2 border-end">
+                            <h6 class="text-center mb-2" style="font-size: 0.9rem;">Financial Projections</h6>
+                            <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem;">
+                                <span class="text-muted">Cost/Acre:</span>
+                                <span class="fw-medium">₹{{ prediction_result.cost_per_acre }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem;">
+                                <span class="text-muted">Price/kg:</span>
+                                <span class="fw-medium">₹{{ prediction_result.price_per_kg }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem;">
+                                <span class="text-muted">Revenue:</span>
+                                <span class="fw-medium">₹{{ prediction_result.revenue }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem;">
+                                <span class="text-muted">Profit:</span>
+                                <span style="color: #28a745; font-weight: 500;">₹{{ prediction_result.profit }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between" style="font-size: 0.85rem;">
+                                <span class="text-muted">ROI:</span>
+                                <span style="color: #fd7e14; font-weight: 500;">{{ "%.2f"|format(prediction_result.roi) }}%</span>
+                            </div>
+                        </div>
+
+                        <!-- Yield Comparison Chart -->
+                        <div class="col-md-3 p-2">
+                            <h6 class="text-center mb-2" style="font-size: 0.9rem;">Yield Comparison</h6>
+                            <div style="height: 150px; position: relative;">
+                                <canvas id="yield-comparison-chart" {% if prediction_result %}data-prediction-result="{{ prediction_result|tojson|safe }}"{% endif %}></canvas>
+                                {% if prediction_result %}
+                                <script>
+                                    // Debug: Store prediction data in a global variable for debugging
+                                    window.predictionData = {{ prediction_result|tojson|safe }};
+                                    console.log("Prediction data available:", window.predictionData);
+                                </script>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row g-3 mt-2 mb-3">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                <div class="card-header bg-primary text-white py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>About This Dashboard</h6>
+                        <span class="badge bg-light text-dark" style="font-size: 0.8rem;">Data-driven farming decisions</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-8 p-2 border-end">
+                            <p class="mb-2" style="font-size: 0.9rem;">
+                                This dashboard helps farmers make informed decisions about which crops to plant for maximum profitability by comparing:
+                            </p>
+                            <div class="row g-0">
+                                <div class="col-md-6">
+                                    <ul class="mb-0" style="font-size: 0.85rem; padding-left: 1.5rem;">
+                                        <li>Cost per acre</li>
+                                        <li>Yield per acre</li>
+                                        <li>Market price per kg</li>
+                                        <li>Total revenue</li>
+                                        <li style="color: #28a745; font-weight: 500;">Net profit</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="mb-0" style="font-size: 0.85rem; padding-left: 1.5rem;">
+                                        <li style="color: #fd7e14; font-weight: 500;">Return on Investment (ROI)</li>
+                                        <li>Growing period</li>
+                                        <li>Water and labor requirements</li>
+                                        <li>Suitable seasons</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 p-2 bg-light">
+                            <div style="border-left: 3px solid #17a2b8; padding-left: 10px;">
+                                <h6 style="font-size: 0.9rem; color: #17a2b8;"><i class="bi bi-lightbulb me-1"></i>Yield Predictor Feature</h6>
+                                <p style="font-size: 0.8rem; margin-bottom: 0;">
+                                    Estimate crop yields based on different growing conditions to make more informed planting decisions. Try different combinations of soil, water, and fertilizer to optimize yield and profit.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/comparison-dashboard.js') }}"></script>
+<script>
+    // Add any additional JavaScript if needed
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add seasonal filtering functionality
+        const seasonFilters = document.querySelectorAll('.season-filter');
+
+        // Add data-season attribute to each crop row and update season badges
+        document.querySelectorAll('.crop-row').forEach(row => {
+            const cropId = row.getAttribute('data-crop-id');
+            // This is a placeholder - in a real app, you would get this from the crop data
+            // For now, let's assign random seasons for demonstration
+            const seasons = ['kharif', 'rabi', 'zaid'];
+            const randomSeason = seasons[Math.floor(Math.random() * seasons.length)];
+            row.setAttribute('data-season', randomSeason);
+
+            // Update the season badge
+            const seasonBadge = row.querySelector('.season-badge');
+            if (seasonBadge) {
+                seasonBadge.textContent = randomSeason.charAt(0).toUpperCase() + randomSeason.slice(1);
+
+                // Set badge color based on season
+                if (randomSeason === 'kharif') {
+                    seasonBadge.style.backgroundColor = '#28a745';
+                    seasonBadge.style.color = 'white';
+                } else if (randomSeason === 'rabi') {
+                    seasonBadge.style.backgroundColor = '#007bff';
+                    seasonBadge.style.color = 'white';
+                } else if (randomSeason === 'zaid') {
+                    seasonBadge.style.backgroundColor = '#fd7e14';
+                    seasonBadge.style.color = 'white';
+                }
+            }
+        });
+
+        // Check for prediction result
+        const yieldComparisonChart = document.getElementById('yield-comparison-chart');
+        if (yieldComparisonChart && yieldComparisonChart.hasAttribute('data-prediction-result')) {
+            console.log("Prediction result found on chart element");
+        }
+    });
+</script>
+{% endblock %}

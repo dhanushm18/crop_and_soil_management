@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Weather Information - Weather-Aware Farming{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Weather Information</h1>
+    
+    <!-- Location Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ url_for('weather') }}" method="post" class="row g-3">
+                <div class="col-md-5">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" value="{{ city }}" required>
+                </div>
+                <div class="col-md-5">
+                    <label for="country" class="form-label">Country Code</label>
+                    <input type="text" class="form-control" id="country" name="country" value="{{ country }}" placeholder="e.g., IN, US">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% elif current_weather %}
+    
+    <!-- Current Weather -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="mb-0">Current Weather in {{ current_weather.name }}, {{ current_weather.sys.country }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 text-center">
+                    <div class="mb-3">
+                        <img src="https://openweathermap.org/img/wn/{{ current_weather.weather[0].icon }}@4x.png" alt="{{ current_weather.weather[0].description }}">
+                        <h3>{{ current_weather.weather[0].main }}</h3>
+                        <p class="text-muted">{{ current_weather.weather[0].description }}</p>
+                    </div>
+                    <div class="temp-display mb-3">
+                        {{ current_weather.main.temp|round|int }}°C
+                    </div>
+                    <p>Feels like {{ current_weather.main.feels_like|round|int }}°C</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-temperature-high text-danger"></i>
+                                    <h5>High / Low</h5>
+                                    <p>{{ current_weather.main.temp_max|round|int }}° / {{ current_weather.main.temp_min|round|int }}°</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-tint text-primary"></i>
+                                    <h5>Humidity</h5>
+                                    <p>{{ current_weather.main.humidity }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-wind text-info"></i>
+                                    <h5>Wind</h5>
+                                    <p>{{ current_weather.wind.speed }} m/s</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-compress-alt text-secondary"></i>
+                                    <h5>Pressure</h5>
+                                    <p>{{ current_weather.main.pressure }} hPa</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            Last updated: {{ current_date }}
+        </div>
+    </div>
+    
+    <!-- Weather Forecast -->
+    <h2 class="mb-4">5-Day Forecast</h2>
+    <div class="row">
+        {% for day in forecast %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    {{ day.date }}
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="card-title">
+                        {% for condition in day.weather_conditions %}
+                            {{ condition }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </h5>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <i class="fas fa-temperature-high text-danger"></i>
+                            <p>High: {{ day.temp_max|round|int }}°C</p>
+                        </div>
+                        <div class="col-6">
+                            <i class="fas fa-temperature-low text-primary"></i>
+                            <p>Low: {{ day.temp_min|round|int }}°C</p>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <i class="fas fa-tint text-primary"></i>
+                            <p>Humidity: {{ day.humidity }}%</p>
+                        </div>
+                        <div class="col-6">
+                            <i class="fas fa-cloud-rain text-info"></i>
+                            <p>Rain: {{ day.rain_chance }}%</p>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <i class="fas fa-wind text-secondary"></i>
+                        <p>Wind: {{ day.wind_speed }} m/s</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <a href="{{ url_for('crops', city=city, country=country) }}" class="btn btn-success w-100">
+                <i class="fas fa-seedling me-2"></i>Get Crop Recommendations
+            </a>
+        </div>
+        <div class="col-md-6 mb-3">
+            <a href="{{ url_for('soil', city=city, country=country) }}" class="btn btn-warning w-100">
+                <i class="fas fa-mountain me-2"></i>Get Soil Management Advice
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

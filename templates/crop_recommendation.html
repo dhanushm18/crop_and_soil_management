@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Crop Recommendation - Agriculture Hub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1 class="mb-4">Crop Recommendation System</h1>
+        <p class="lead">Enter your soil parameters and climate conditions to get personalized crop recommendations</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Soil and Climate Parameters</h3>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <form action="{{ url_for('crop_predict') }}" method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="N" class="form-label">Nitrogen (N) Content:</label>
+                            <input type="number" step="0.01" class="form-control" id="N" name="N" required placeholder="e.g., 90" value="{{ input_data.N if input_data else '' }}">
+                            <small class="text-muted">mg/kg</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="P" class="form-label">Phosphorus (P) Content:</label>
+                            <input type="number" step="0.01" class="form-control" id="P" name="P" required placeholder="e.g., 42" value="{{ input_data.P if input_data else '' }}">
+                            <small class="text-muted">mg/kg</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="K" class="form-label">Potassium (K) Content:</label>
+                            <input type="number" step="0.01" class="form-control" id="K" name="K" required placeholder="e.g., 43" value="{{ input_data.K if input_data else '' }}">
+                            <small class="text-muted">mg/kg</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="temperature" class="form-label">Temperature:</label>
+                            <input type="number" step="0.01" class="form-control" id="temperature" name="temperature" required placeholder="e.g., 20.87" value="{{ input_data.temperature if input_data else '' }}">
+                            <small class="text-muted">°C</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="humidity" class="form-label">Humidity:</label>
+                            <input type="number" step="0.01" class="form-control" id="humidity" name="humidity" required placeholder="e.g., 82.00" value="{{ input_data.humidity if input_data else '' }}">
+                            <small class="text-muted">%</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="ph" class="form-label">pH Value:</label>
+                            <input type="number" step="0.01" class="form-control" id="ph" name="ph" required placeholder="e.g., 6.5" value="{{ input_data.ph if input_data else '' }}">
+                            <small class="text-muted">0-14 scale</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="rainfall" class="form-label">Rainfall:</label>
+                            <input type="number" step="0.01" class="form-control" id="rainfall" name="rainfall" required placeholder="e.g., 202.93" value="{{ input_data.rainfall if input_data else '' }}">
+                            <small class="text-muted">mm</small>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">Get Crop Recommendation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if prediction %}
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Recommendation Result</h3>
+            </div>
+            <div class="card-body text-center">
+                <h4 class="mb-3">{{ prediction }}</h4>
+                <p>Based on your soil parameters and climate conditions, our AI model recommends this crop for optimal yield.</p>
+                <div class="alert alert-info">
+                    <p class="mb-0"><strong>Note:</strong> This recommendation is based on machine learning predictions. Consider consulting with local agricultural experts for specific advice for your region.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">How It Works</h3>
+            </div>
+            <div class="card-body">
+                <p>Our crop recommendation system uses a machine learning model trained on extensive agricultural data to predict the most suitable crop for your specific soil and climate conditions.</p>
+                <ol>
+                    <li>Enter your soil's nitrogen, phosphorus, and potassium content</li>
+                    <li>Provide your local temperature, humidity, pH, and rainfall data</li>
+                    <li>Our AI model analyzes these parameters</li>
+                    <li>Receive a personalized crop recommendation optimized for your conditions</li>
+                </ol>
+                <p>This helps farmers make data-driven decisions about which crops to plant, potentially increasing yield and reducing resource waste.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soil Health Assessment Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/">Soil Health Assessment Tool</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4>Soil Health Assessment</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="lead">Enter your soil parameters to assess soil health, determine fertility level, and find suitable crops.</p>
+                        
+                        <form id="soil-form" class="mt-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="nitrogen" class="form-label">Nitrogen (N) in ppm (0-100)</label>
+                                        <input type="number" class="form-control" id="nitrogen" name="nitrogen" min="0" max="100" step="0.1" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="phosphorus" class="form-label">Phosphorus (P) in ppm (0-100)</label>
+                                        <input type="number" class="form-control" id="phosphorus" name="phosphorus" min="0" max="100" step="0.1" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="potassium" class="form-label">Potassium (K) in ppm (0-100)</label>
+                                        <input type="number" class="form-control" id="potassium" name="potassium" min="0" max="100" step="0.1" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="ph" class="form-label">pH (4.0-8.5)</label>
+                                        <input type="number" class="form-control" id="ph" name="ph" min="4.0" max="8.5" step="0.1" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="ec" class="form-label">Electrical Conductivity (EC) in dS/m (0-4)</label>
+                                        <input type="number" class="form-control" id="ec" name="ec" min="0" max="4" step="0.1" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="moisture" class="form-label">Moisture Content in % (0-100)</label>
+                                        <input type="number" class="form-control" id="moisture" name="moisture" min="0" max="100" step="0.1" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="organic_matter" class="form-label">Organic Matter in % (0-10)</label>
+                                        <input type="number" class="form-control" id="organic_matter" name="organic_matter" min="0" max="10" step="0.1" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-success btn-lg">Assess Soil Health</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div id="results-section" class="card mb-4 d-none">
+                    <div class="card-header bg-success text-white">
+                        <h4>Assessment Results</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary text-white">Soil Fertility Level</div>
+                                    <div class="card-body">
+                                        <h3 id="fertility-level" class="text-center"></h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-info text-white">Soil Quality Score</div>
+                                    <div class="card-body">
+                                        <h3 id="quality-score" class="text-center"></h3>
+                                        <div class="progress mt-2">
+                                            <div id="quality-progress" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-success text-white">Suitable Crops</div>
+                                    <div class="card-body">
+                                        <ul id="suitable-crops" class="list-group"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4>Sample Soil Profiles</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Click on any of these sample profiles to automatically fill the form:</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mb-3 sample-profile" data-profile="high">
+                                    <div class="card-header bg-success">High Fertility Soil</div>
+                                    <div class="card-body">
+                                        <p>N: 80 ppm, P: 75 ppm, K: 85 ppm</p>
+                                        <p>pH: 6.5, EC: 1.2 dS/m</p>
+                                        <p>Moisture: 60%, Organic Matter: 7.5%</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mb-3 sample-profile" data-profile="medium">
+                                    <div class="card-header bg-warning">Medium Fertility Soil</div>
+                                    <div class="card-body">
+                                        <p>N: 45 ppm, P: 40 ppm, K: 50 ppm</p>
+                                        <p>pH: 7.0, EC: 2.0 dS/m</p>
+                                        <p>Moisture: 45%, Organic Matter: 4.0%</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mb-3 sample-profile" data-profile="low">
+                                    <div class="card-header bg-danger">Low Fertility Soil</div>
+                                    <div class="card-body">
+                                        <p>N: 15 ppm, P: 10 ppm, K: 20 ppm</p>
+                                        <p>pH: 5.0, EC: 3.5 dS/m</p>
+                                        <p>Moisture: 30%, Organic Matter: 1.5%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Soil Health Assessment Tool</h5>
+                    <p>A machine learning-based tool to assess soil health and provide recommendations for suitable crops.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2023 Soil Health Assessment Tool</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

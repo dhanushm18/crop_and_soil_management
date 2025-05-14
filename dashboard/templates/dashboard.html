@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Soil Tracking Dashboard - {{ farm.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ farm.name }} Soil Dashboard</h1>
+    <div>
+        <a href="{{ url_for('new_soil_record', farm_id=farm.id) }}" class="btn btn-success me-2">
+            <i class="bi bi-plus-circle"></i> Add Soil Record
+        </a>
+        <a href="{{ url_for('new_harvest', farm_id=farm.id) }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Record Harvest
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Farm Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Location:</strong> {{ farm.location }}</p>
+                <p><strong>Size:</strong> {{ farm.size }} hectares</p>
+                <p><strong>Soil Records:</strong> {{ soil_records|length }}</p>
+                <p><strong>Harvests:</strong> {{ harvests|length }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if harvests %}
+                <h6>Latest Harvest:</h6>
+                <p>
+                    {{ harvests[0].crop.name }} harvested on {{ harvests[0].date.strftime('%Y-%m-%d') }}
+                    {% if harvests[0].yield_amount %}
+                    (Yield: {{ harvests[0].yield_amount }} kg)
+                    {% endif %}
+                </p>
+                {% endif %}
+
+                {% if soil_records and soil_records|length > 1 %}
+                <h6>Latest Soil Update:</h6>
+                <p>Soil record updated on {{ soil_records[-1].date.strftime('%Y-%m-%d') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Soil Components Tracking</h5>
+                <a href="{{ url_for('soil_history', farm_id=farm.id) }}" class="btn btn-light btn-sm">
+                    <i class="bi bi-fullscreen"></i> View Full History
+                </a>
+            </div>
+            <div class="card-body">
+                {% if components_chart %}
+                <div class="text-center">
+                    <img src="data:image/png;base64,{{ components_chart }}" class="img-fluid" alt="Soil Components Over Time">
+                </div>
+                <div class="mt-3 text-center">
+                    <p class="text-muted">This graph shows how soil components change over time. Each harvest depletes certain nutrients based on the crop type.</p>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <p><i class="bi bi-info-circle"></i> No soil data available yet. <a href="{{ url_for('new_soil_record', farm_id=farm.id) }}">Add your first soil record</a> to see trends.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Recent Soil Records</h5>
+            </div>
+            <div class="card-body">
+                {% if soil_records %}
+                <div class="list-group">
+                    {% for record in soil_records[-5:]|reverse %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">Soil Record #{{ record.id }}</h6>
+                            <small>{{ record.date.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        {% if record.notes %}
+                        <p class="mb-1">{{ record.notes }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No soil records yet. <a href="{{ url_for('new_soil_record', farm_id=farm.id) }}">Add your first soil record</a>.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Recent Harvests</h5>
+            </div>
+            <div class="card-body">
+                {% if harvests %}
+                <div class="list-group">
+                    {% for harvest in harvests[:5] %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ harvest.crop.name }}</h6>
+                            <small>{{ harvest.date.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        {% if harvest.yield_amount %}
+                        <p class="mb-1">Yield: {{ harvest.yield_amount }} kg</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No harvests recorded yet. <a href="{{ url_for('new_harvest', farm_id=farm.id) }}">Record your first harvest</a>.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

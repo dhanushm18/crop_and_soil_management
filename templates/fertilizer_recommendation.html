@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Fertilizer Recommendation - Agriculture Hub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1 class="mb-4">Fertilizer Recommendation System</h1>
+        <p class="lead">Get personalized fertilizer recommendations based on soil nutrient levels and crop type</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Soil and Crop Parameters</h3>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <form action="{{ url_for('fertilizer_predict') }}" method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="n_content" class="form-label">Nitrogen (N) Content:</label>
+                            <input type="number" step="0.01" class="form-control" id="n_content" name="n_content" required placeholder="e.g., 40">
+                            <small class="text-muted">mg/kg</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="p_content" class="form-label">Phosphorus (P) Content:</label>
+                            <input type="number" step="0.01" class="form-control" id="p_content" name="p_content" required placeholder="e.g., 35">
+                            <small class="text-muted">mg/kg</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="k_content" class="form-label">Potassium (K) Content:</label>
+                            <input type="number" step="0.01" class="form-control" id="k_content" name="k_content" required placeholder="e.g., 30">
+                            <small class="text-muted">mg/kg</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="temperature" class="form-label">Temperature:</label>
+                            <input type="number" step="0.01" class="form-control" id="temperature" name="temperature" required placeholder="e.g., 25">
+                            <small class="text-muted">°C</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="humidity" class="form-label">Humidity:</label>
+                            <input type="number" step="0.01" class="form-control" id="humidity" name="humidity" required placeholder="e.g., 65">
+                            <small class="text-muted">%</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="moisture" class="form-label">Soil Moisture:</label>
+                            <input type="number" step="0.01" class="form-control" id="moisture" name="moisture" required placeholder="e.g., 40">
+                            <small class="text-muted">%</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="soil_type" class="form-label">Soil Type:</label>
+                            <select class="form-select" id="soil_type" name="soil_type" required>
+                                <option value="" selected disabled>Select soil type</option>
+                                {% for soil_type in soil_types %}
+                                <option value="{{ soil_type }}">{{ soil_type }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="crop_type" class="form-label">Crop Type:</label>
+                            <select class="form-select" id="crop_type" name="crop_type" required>
+                                <option value="" selected disabled>Select crop type</option>
+                                {% for crop_type in crop_types %}
+                                <option value="{{ crop_type }}">{{ crop_type }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">Get Fertilizer Recommendation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">How It Works</h3>
+            </div>
+            <div class="card-body">
+                <p>Our fertilizer recommendation system uses a machine learning model to suggest the most appropriate fertilizer based on your soil's nutrient content, environmental conditions, and the crop you're growing.</p>
+                <ol>
+                    <li>Enter your soil's nitrogen, phosphorus, and potassium levels</li>
+                    <li>Provide environmental data like temperature, humidity, and soil moisture</li>
+                    <li>Select your soil type and the crop you're growing</li>
+                    <li>Our AI model analyzes these parameters</li>
+                    <li>Receive a personalized fertilizer recommendation for optimal crop growth</li>
+                </ol>
+                <p>Using the right fertilizer can significantly improve crop yield while minimizing environmental impact and reducing costs.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

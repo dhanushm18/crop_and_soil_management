@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ crop.name }} - Agriculture Soil Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ crop.name }}</h1>
+    <div>
+        <a href="{{ url_for('crops') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Crops
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Soil Depletion Rates</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">The following table shows how much of each soil component is depleted after harvesting {{ crop.name }}.</p>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Depletion Rate</th>
+                                <th>Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rate in depletion_rates %}
+                            <tr>
+                                <td>{{ rate.component.name }}</td>
+                                <td>{{ rate.rate }}</td>
+                                <td>{{ rate.component.unit }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

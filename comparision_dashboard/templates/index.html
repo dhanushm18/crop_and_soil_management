@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Multi-Crop Profit Comparison Dashboard</h2>
+            </div>
+            <div class="card-body">
+                <p class="lead">
+                    Compare different crops to determine the most profitable option for your farm.
+                    Select crops to visualize their profitability metrics.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h4 class="mb-0">Select Crops to Compare</h4>
+            </div>
+            <div class="card-body">
+                <form id="crop-selection-form">
+                    {% for crop in crops %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input crop-checkbox" type="checkbox" value="{{ crop.id }}" id="crop-{{ crop.id }}">
+                        <label class="form-check-label" for="crop-{{ crop.id }}">
+                            {{ crop.name }} ({{ crop.suitable_season }})
+                        </label>
+                    </div>
+                    {% endfor %}
+                    <button type="button" id="compare-btn" class="btn btn-primary mt-3">Compare Selected Crops</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Crop Information</h4>
+            </div>
+            <div class="card-body">
+                <div id="crop-info">
+                    <p>Select a crop from the table to view detailed information.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Profit Comparison</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="profit-chart" height="300"></canvas>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">ROI Comparison</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="roi-chart" height="300"></canvas>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Crop Comparison Table</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Crop</th>
+                                <th>Cost/Acre (₹)</th>
+                                <th>Yield/Acre (kg)</th>
+                                <th>Price/kg (₹)</th>
+                                <th>Revenue (₹)</th>
+                                <th>Profit (₹)</th>
+                                <th>ROI (%)</th>
+                                <th>Growing Period (days)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-table-body">
+                            {% for crop in crops %}
+                            <tr class="crop-row" data-crop-id="{{ crop.id }}">
+                                <td>{{ crop.name }}</td>
+                                <td>{{ crop.cost_per_acre }}</td>
+                                <td>{{ crop.yield_per_acre }}</td>
+                                <td>{{ crop.price_per_kg }}</td>
+                                <td>{{ crop.revenue }}</td>
+                                <td>{{ crop.profit }}</td>
+                                <td>{{ "%.2f"|format(crop.roi) }}</td>
+                                <td>{{ crop.growing_period }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="about">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">About This Dashboard</h3>
+            </div>
+            <div class="card-body">
+                <p>
+                    This Multi-Crop Profit Comparison Dashboard is designed to help farmers and agricultural professionals
+                    make informed decisions about which crops to plant for maximum profitability. The dashboard provides
+                    a comprehensive comparison of different crops based on various metrics such as:
+                </p>
+                <ul>
+                    <li>Cost per acre</li>
+                    <li>Yield per acre</li>
+                    <li>Market price per kg</li>
+                    <li>Total revenue</li>
+                    <li>Net profit</li>
+                    <li>Return on Investment (ROI)</li>
+                    <li>Growing period</li>
+                    <li>Water and labor requirements</li>
+                    <li>Suitable seasons</li>
+                </ul>
+                <p>
+                    By comparing these metrics across different crops, users can identify the most profitable options
+                    for their specific agricultural conditions and constraints.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize charts with empty data
+        const profitChartCtx = document.getElementById('profit-chart').getContext('2d');
+        const roiChartCtx = document.getElementById('roi-chart').getContext('2d');
+        
+        const profitChart = new Chart(profitChartCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Profit per Acre (₹)',
+                    data: [],
+                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Profit (₹)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Crop'
+                        }
+                    }
+                }
+            }
+        });
+        
+        const roiChart = new Chart(roiChartCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'ROI (%)',
+                    data: [],
+                    backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'ROI (%)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Crop'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Function to update charts based on selected crops
+        function updateCharts(selectedCrops) {
+            const cropNames = selectedCrops.map(crop => crop.name);
+            const profits = selectedCrops.map(crop => crop.profit);
+            const rois = selectedCrops.map(crop => crop.roi);
+            
+            profitChart.data.labels = cropNames;
+            profitChart.data.datasets[0].data = profits;
+            profitChart.update();
+            
+            roiChart.data.labels = cropNames;
+            roiChart.data.datasets[0].data = rois;
+            roiChart.update();
+        }
+        
+        // Handle compare button click
+        document.getElementById('compare-btn').addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.crop-checkbox:checked');
+            const selectedCropIds = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (selectedCropIds.length === 0) {
+                alert('Please select at least one crop to compare.');
+                return;
+            }
+            
+            // Filter crops based on selection
+            const selectedCrops = {{ crops|tojson }}.filter(crop => selectedCropIds.includes(crop.id.toString()));
+            updateCharts(selectedCrops);
+        });
+        
+        // Handle crop row click to show details
+        document.querySelectorAll('.crop-row').forEach(row => {
+            row.addEventListener('click', function() {
+                const cropId = this.getAttribute('data-crop-id');
+                const crop = {{ crops|tojson }}.find(c => c.id == cropId);
+                
+                const cropInfoHtml = `
+                    <h5>${crop.name}</h5>
+                    <p><strong>Suitable Season:</strong> ${crop.suitable_season}</p>
+                    <p><strong>Water Requirement:</strong> ${crop.water_requirement}</p>
+                    <p><strong>Labor Requirement:</strong> ${crop.labor_requirement}</p>
+                    <p><strong>Growing Period:</strong> ${crop.growing_period} days</p>
+                    <p><strong>Profit per Acre:</strong> ₹${crop.profit}</p>
+                    <p><strong>ROI:</strong> ${crop.roi.toFixed(2)}%</p>
+                `;
+                
+                document.getElementById('crop-info').innerHTML = cropInfoHtml;
+                
+                // Highlight selected row
+                document.querySelectorAll('.crop-row').forEach(r => r.classList.remove('table-primary'));
+                this.classList.add('table-primary');
+            });
+        });
+    });
+</script>
+{% endblock %}

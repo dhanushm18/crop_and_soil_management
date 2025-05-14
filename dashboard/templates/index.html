@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h1 class="display-4 mb-4">Welcome to AgriSoil Tracker</h1>
+        <p class="lead">Track your soil health and monitor nutrient depletion after each harvest</p>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">Track Soil Components</h3>
+                <p class="card-text">Record and monitor essential soil nutrients and components over time.</p>
+                <img src="https://via.placeholder.com/150?text=Soil+Components" class="img-fluid mb-3" alt="Soil Components">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">Monitor Harvests</h3>
+                <p class="card-text">Record crop harvests and automatically calculate soil nutrient depletion.</p>
+                <img src="https://via.placeholder.com/150?text=Harvests" class="img-fluid mb-3" alt="Harvests">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">Visualize Data</h3>
+                <p class="card-text">See charts and trends of your soil health over time and across harvests.</p>
+                <img src="https://via.placeholder.com/150?text=Visualizations" class="img-fluid mb-3" alt="Visualizations">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12 text-center">
+        <a href="{{ url_for('login') }}" class="btn btn-success btn-lg">Get Started</a>
+    </div>
+</div>
+{% endblock %}

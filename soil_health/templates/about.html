@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Soil Health Assessment Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/">Soil Health Assessment Tool</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4>About the Soil Health Assessment Tool</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5>What is the Soil Health Assessment Tool?</h5>
+                        <p>
+                            The Soil Health Assessment Tool is a machine learning-based application designed to help farmers, 
+                            gardeners, and agricultural professionals assess the health of their soil and make informed decisions 
+                            about crop selection and soil management.
+                        </p>
+                        
+                        <h5>How it Works</h5>
+                        <p>
+                            The tool uses machine learning models trained on soil data to predict:
+                        </p>
+                        <ul>
+                            <li><strong>Soil Fertility Level</strong> - Categorized as High, Medium, or Low</li>
+                            <li><strong>Soil Quality Score</strong> - A numerical score from 0 to 100</li>
+                            <li><strong>Suitable Crops</strong> - A list of crops that would grow well in the given soil conditions</li>
+                        </ul>
+                        
+                        <h5>Input Parameters</h5>
+                        <p>
+                            The tool requires the following soil parameters:
+                        </p>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Unit</th>
+                                        <th>Range</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Nitrogen (N)</td>
+                                        <td>ppm</td>
+                                        <td>0-100</td>
+                                        <td>Essential for leaf and vegetative growth</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Phosphorus (P)</td>
+                                        <td>ppm</td>
+                                        <td>0-100</td>
+                                        <td>Important for root development and flowering</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potassium (K)</td>
+                                        <td>ppm</td>
+                                        <td>0-100</td>
+                                        <td>Helps in overall plant health and disease resistance</td>
+                                    </tr>
+                                    <tr>
+                                        <td>pH</td>
+                                        <td>-</td>
+                                        <td>4.0-8.5</td>
+                                        <td>Measure of soil acidity or alkalinity</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Electrical Conductivity (EC)</td>
+                                        <td>dS/m</td>
+                                        <td>0-4</td>
+                                        <td>Indicates salt content in soil</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Moisture Content</td>
+                                        <td>%</td>
+                                        <td>0-100</td>
+                                        <td>Amount of water present in the soil</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Organic Matter</td>
+                                        <td>%</td>
+                                        <td>0-10</td>
+                                        <td>Decomposed plant and animal material in soil</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <h5>The Machine Learning Model</h5>
+                        <p>
+                            The tool uses Random Forest models trained on a comprehensive dataset of soil samples. 
+                            The models have been optimized to provide accurate predictions for a wide range of soil conditions.
+                        </p>
+                        
+                        <h5>Interpreting the Results</h5>
+                        <ul>
+                            <li><strong>Fertility Level</strong>: Indicates the overall fertility of the soil.</li>
+                            <li><strong>Quality Score</strong>: A numerical representation of soil health, with higher scores indicating healthier soil.</li>
+                            <li><strong>Suitable Crops</strong>: A list of crops that are likely to thrive in the given soil conditions.</li>
+                        </ul>
+                        
+                        <h5>Improving Soil Health</h5>
+                        <p>
+                            If your soil health assessment indicates poor soil quality, consider the following improvements:
+                        </p>
+                        <ul>
+                            <li>Add organic matter (compost, manure) to improve soil structure and nutrient content</li>
+                            <li>Adjust pH using lime (to raise pH) or sulfur (to lower pH)</li>
+                            <li>Add appropriate fertilizers based on nutrient deficiencies</li>
+                            <li>Implement crop rotation to prevent nutrient depletion</li>
+                            <li>Use cover crops to prevent erosion and add organic matter</li>
+                            <li>Improve drainage for waterlogged soils</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Soil Health Assessment Tool</h5>
+                    <p>A machine learning-based tool to assess soil health and provide recommendations for suitable crops.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2023 Soil Health Assessment Tool</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

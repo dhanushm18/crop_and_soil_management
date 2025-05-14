@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Agriculture Hub{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <!-- Additional CSS -->
+    {% block extra_css %}{% endblock %}
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Agriculture Hub - Your all-in-one platform for smart farming with AI-powered crop recommendations, fertilizer suggestions, plant disease detection, and soil monitoring.">
+    <meta name="keywords" content="agriculture, farming, crop recommendation, fertilizer, plant disease, soil quality, AI, machine learning">
+</head>
+<body>
+    <!-- Modern Navigation -->
+    <nav class="navbar navbar-expand-lg modern-navbar">
+        <div class="container">
+            <!-- Logo - Improved design -->
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-flower1"></i>AgriHub
+            </a>
+
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('index') %}active{% endif %}" href="{{ url_for('index') }}">
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('crop_recommendation') %}active{% endif %}" href="{{ url_for('crop_recommendation') }}">
+                            <i class="bi bi-tree"></i> Crop
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('fertilizer_recommendation') %}active{% endif %}" href="{{ url_for('fertilizer_recommendation') }}">
+                            <i class="bi bi-droplet"></i> Fertilizer
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('plant_disease') %}active{% endif %}" href="{{ url_for('plant_disease') }}">
+                            <i class="bi bi-bug"></i> Disease
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('chatbot') %}active{% endif %}" href="{{ url_for('chatbot') }}">
+                            <i class="bi bi-chat-dots"></i> Chatbot
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('weather_aware') %}active{% endif %}" href="{{ url_for('weather_aware') }}">
+                            <i class="bi bi-cloud-sun"></i> Weather
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'soil_health' in request.path %}active{% endif %}" href="{{ url_for('soil_health') }}">
+                            <i class="bi bi-moisture"></i> Soil Health
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Right Side Elements - Search bar removed -->
+                <div class="d-flex align-items-center">
+                    <!-- Empty space for future elements if needed -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="container mt-3">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category if category != '_' else 'info' }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-4" style="position: relative; width: 100%; clear: both; margin-top: 50px !important;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h5 class="text-success"><i class="bi bi-flower1 me-2"></i>AgriHub</h5>
+                    <p class="text-muted">Your all-in-one platform for smart farming decisions powered by AI and data analytics.</p>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h5 class="text-success">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('crop_recommendation') }}" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1"></i> Crop Recommendation</a></li>
+                        <li><a href="{{ url_for('fertilizer_recommendation') }}" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1"></i> Fertilizer Recommendation</a></li>
+                        <li><a href="{{ url_for('plant_disease') }}" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1"></i> Plant Disease Detection</a></li>
+                        <li><a href="{{ url_for('chatbot') }}" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1"></i> Agri Chatbot</a></li>
+                        <li><a href="{{ url_for('weather_aware') }}" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1"></i> Weather-Aware Farming</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="text-success">Contact Us</h5>
+                    <ul class="list-unstyled">
+                        <li class="text-muted"><i class="bi bi-envelope me-2"></i> info@agriculturehub.com</li>
+                        <li class="text-muted"><i class="bi bi-telephone me-2"></i> +91 8722481835</li>
+                        <li class="text-muted"><i class="bi bi-geo-alt me-2"></i> Mandya, India</li>
+                    </ul>
+                    <div class="mt-2">
+                        <a href="#" class="text-success me-2"><i class="bi bi-facebook fs-5"></i></a>
+                        <a href="#" class="text-success me-2"><i class="bi bi-twitter fs-5"></i></a>
+                        <a href="#" class="text-success me-2"><i class="bi bi-instagram fs-5"></i></a>
+                        <a href="#" class="text-success"><i class="bi bi-linkedin fs-5"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p class="mb-0 text-muted">© 2024 AgriHub - All rights reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hero-bg.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <!-- Additional JS -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Crops - Agriculture Soil Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Crops</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Available Crops</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for crop in crops %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ crop.name }}</h5>
+                                <a href="{{ url_for('crop_detail', crop_id=crop.id) }}" class="btn btn-outline-success mt-2">View Depletion Rates</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

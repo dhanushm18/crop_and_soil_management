@@ -1,0 +1,361 @@
+{% extends 'base_new.html' %}
+
+{% block title %}Agriculture Hub - All-in-one Platform for Farmers{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container hero-content">
+        <span class="hero-badge animate-fade-in">AI-Powered Farming</span>
+        <h1 class="animate-fade-in">Welcome to Agriculture Hub</h1>
+        <p class="animate-fade-in delay-200">Your all-in-one platform for smart farming decisions powered by advanced AI technology</p>
+        <div class="hero-buttons">
+            <a href="#features" class="btn btn-success btn-lg btn-icon animate-fade-in delay-300">
+                <i class="bi bi-grid-3x3-gap-fill"></i> Explore Features
+            </a>
+            <a href="#benefits" class="btn btn-outline-light btn-lg btn-icon animate-fade-in delay-400">
+                <i class="bi bi-info-circle"></i> Learn More
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div id="features" class="container section-padding">
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <h2 class="accent-heading animate-fade-in">Our Smart Farming Solutions</h2>
+            <div class="section-divider mx-auto mb-4" style="max-width: 150px;"></div>
+            <p class="lead animate-fade-in delay-200">Leverage the power of AI and data analytics to optimize your farming practices</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="feature-card animate-fade-in delay-100">
+                <div class="feature-card-icon">
+                    <i class="bi bi-plant"></i>
+                </div>
+                <h3>Crop Recommendation</h3>
+                <p>Get personalized crop recommendations based on your soil composition and climate conditions for optimal yield.</p>
+                <a href="{{ url_for('crop_recommendation') }}" class="btn btn-success btn-icon">
+                    <i class="bi bi-arrow-right-circle"></i> Try Now
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="feature-card animate-fade-in delay-200">
+                <div class="feature-card-icon">
+                    <i class="bi bi-droplet-fill"></i>
+                </div>
+                <h3>Fertilizer Recommendation</h3>
+                <p>Find the optimal fertilizer for your crops based on soil nutrient levels and crop type to maximize growth.</p>
+                <a href="{{ url_for('fertilizer_recommendation') }}" class="btn btn-success btn-icon">
+                    <i class="bi bi-arrow-right-circle"></i> Try Now
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="feature-card animate-fade-in delay-300">
+                <div class="feature-card-icon">
+                    <i class="bi bi-bug"></i>
+                </div>
+                <h3>Plant Disease Detection</h3>
+                <p>Identify plant diseases from images and get treatment recommendations to protect your crops.</p>
+                <a href="{{ url_for('plant_disease') }}" class="btn btn-success btn-icon">
+                    <i class="bi bi-arrow-right-circle"></i> Try Now
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="feature-card animate-fade-in delay-100">
+                <div class="feature-card-icon">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </div>
+                <h3>Agriculture Chatbot</h3>
+                <p>Get instant answers to your farming questions from our AI-powered agriculture expert available 24/7.</p>
+                <a href="{{ url_for('chatbot') }}" class="btn btn-success btn-icon">
+                    <i class="bi bi-arrow-right-circle"></i> Chat Now
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="feature-card animate-fade-in delay-200">
+                <div class="feature-card-icon">
+                    <i class="bi bi-cloud-sun-fill"></i>
+                </div>
+                <h3>Weather-Aware Farming</h3>
+                <p>Get personalized farming recommendations based on weather forecasts to optimize planting, irrigation, and harvesting schedules.</p>
+                <a href="{{ url_for('weather_aware') }}" class="btn btn-success btn-icon">
+                    <i class="bi bi-arrow-right-circle"></i> Check Weather
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="feature-card animate-fade-in delay-300">
+                <div class="feature-card-icon">
+                    <i class="bi bi-bar-chart-line"></i>
+                </div>
+                <h3>Crop Comparison</h3>
+                <p>Compare different crops based on profitability metrics to make informed decisions about which crops to plant for maximum returns.</p>
+                <a href="{{ url_for('comparison_dashboard') }}" class="btn btn-success btn-icon">
+                    <i class="bi bi-arrow-right-circle"></i> Compare Crops
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-4 mx-auto">
+            <div class="feature-card animate-fade-in delay-400">
+                <div class="feature-card-icon">
+                    <i class="bi bi-moisture"></i>
+                </div>
+                <h3>Soil Health Analysis</h3>
+                <p>Analyze your soil parameters to get a comprehensive soil health card with fertility assessment and crop recommendations.</p>
+                <a href="{{ url_for('soil_health') }}" class="btn btn-success btn-icon">
+                    <i class="bi bi-arrow-right-circle"></i> Analyze Soil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="row mt-5">
+        <div class="col-md-12 text-center">
+            <div class="card bg-accent shadow-md rounded-lg animate-fade-in">
+                <div class="card-body py-5 px-4">
+                    <h3 class="accent-heading mb-4">Ready to Transform Your Farming?</h3>
+                    <div class="section-divider mx-auto mb-4" style="max-width: 100px;"></div>
+                    <p class="lead mb-4">Start using our smart farming tools today and see the difference in your agricultural productivity.</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="#features" class="btn btn-lg btn-success btn-icon me-0 me-md-3 mb-3 mb-md-0">
+                            <i class="bi bi-arrow-up-circle"></i> Explore Features
+                        </a>
+                        <a href="{{ url_for('chatbot') }}" class="btn btn-lg btn-outline-success btn-icon">
+                            <i class="bi bi-chat-text"></i> Ask Our AI
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div id="benefits" class="row mt-5 pt-5">
+        <div class="col-md-12 text-center mb-5">
+            <h2 class="accent-heading animate-fade-in">Why Choose Agriculture Hub?</h2>
+            <div class="section-divider mx-auto mb-4" style="max-width: 150px;"></div>
+            <p class="lead animate-fade-in delay-200">Our platform offers unique advantages for modern farmers</p>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card-minimal animate-fade-in delay-100">
+                <div class="feature-card-icon">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <h3>AI-Powered Recommendations</h3>
+                <p>Get precise crop and fertilizer recommendations based on advanced machine learning models trained on agricultural data.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card-minimal animate-fade-in delay-200">
+                <div class="feature-card-icon">
+                    <i class="bi bi-camera-fill"></i>
+                </div>
+                <h3>Computer Vision Technology</h3>
+                <p>Advanced plant disease detection using state-of-the-art image recognition to identify problems before they spread.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card-minimal animate-fade-in delay-300">
+                <div class="feature-card-icon">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </div>
+                <h3>Intelligent Chatbot</h3>
+                <p>Get instant agricultural advice from our AI assistant powered by Google Gemini, available 24/7 to answer your questions.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card-minimal animate-fade-in delay-100">
+                <div class="feature-card-icon">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
+                <h3>Fast and Accurate Results</h3>
+                <p>Get instant recommendations and analysis to make timely farming decisions when they matter most.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card-minimal animate-fade-in delay-200">
+                <div class="feature-card-icon">
+                    <i class="bi bi-bar-chart-fill"></i>
+                </div>
+                <h3>Data-Driven Insights</h3>
+                <p>Make informed decisions based on analytics and scientific data to improve farm productivity and sustainability.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card-minimal animate-fade-in delay-300">
+                <div class="feature-card-icon">
+                    <i class="bi bi-grid-fill"></i>
+                </div>
+                <h3>All-in-One Platform</h3>
+                <p>Access all the tools you need for modern farming in a single integrated platform designed for ease of use.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="row mt-5 py-5 bg-accent-secondary rounded-lg">
+        <div class="col-md-12 text-center mb-5">
+            <h2 class="accent-heading animate-fade-in">Our Impact</h2>
+            <div class="section-divider mx-auto mb-4" style="max-width: 100px;"></div>
+        </div>
+
+        <div class="col-md-3 col-6 mb-4 text-center">
+            <div class="animate-fade-in delay-100">
+                <h2 class="display-4 fw-bold text-primary">10K+</h2>
+                <p class="text-muted">Farmers Helped</p>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6 mb-4 text-center">
+            <div class="animate-fade-in delay-200">
+                <h2 class="display-4 fw-bold text-primary">25%</h2>
+                <p class="text-muted">Yield Increase</p>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6 mb-4 text-center">
+            <div class="animate-fade-in delay-300">
+                <h2 class="display-4 fw-bold text-primary">30%</h2>
+                <p class="text-muted">Cost Reduction</p>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6 mb-4 text-center">
+            <div class="animate-fade-in delay-400">
+                <h2 class="display-4 fw-bold text-primary">15+</h2>
+                <p class="text-muted">Crops Supported</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <div class="row mt-5 mb-5 py-5 bg-accent rounded-lg">
+        <div class="col-md-12 text-center mb-5">
+            <h2 class="accent-heading animate-fade-in">What Farmers Say</h2>
+            <div class="section-divider mx-auto mb-4" style="max-width: 100px;"></div>
+            <p class="lead animate-fade-in delay-200">Hear from farmers who have transformed their practices with Agriculture Hub</p>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-md rounded-lg border-0 animate-fade-in delay-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="feature-card-icon">
+                            <i class="bi bi-quote"></i>
+                        </div>
+                    </div>
+                    <p class="mb-4 lead fs-5 fst-italic text-center">"The crop recommendation system helped me increase my yield by 30% this season. The AI suggestions were spot on for my soil conditions."</p>
+                    <div class="text-center border-top pt-3 mt-4">
+                        <h5 class="mb-1 fw-bold">Prajwal PG</h5>
+                        <p class="text-muted mb-0">Wheat Farmer, Mysuru</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-md rounded-lg border-0 animate-fade-in delay-200">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="feature-card-icon">
+                            <i class="bi bi-quote"></i>
+                        </div>
+                    </div>
+                    <p class="mb-4 lead fs-5 fst-italic text-center">"The plant disease detection saved my tomato crop. I identified the blight early and was able to treat it before it spread to the entire field."</p>
+                    <div class="text-center border-top pt-3 mt-4">
+                        <h5 class="mb-1 fw-bold">Dhanush DV</h5>
+                        <p class="text-muted mb-0">Vegetable Grower, Mandya</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-md rounded-lg border-0 animate-fade-in delay-300">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="feature-card-icon">
+                            <i class="bi bi-quote"></i>
+                        </div>
+                    </div>
+                    <p class="mb-4 lead fs-5 fst-italic text-center">"The agriculture chatbot has been my go-to advisor for all farming questions. It's like having an expert in my pocket available 24/7."</p>
+                    <div class="text-center border-top pt-3 mt-4">
+                        <h5 class="mb-1 fw-bold">Tarun Gowda</h5>
+                        <p class="text-muted mb-0">Rice Farmer, Mandya</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final CTA -->
+    <div class="row my-5 py-5">
+        <div class="col-lg-8 col-md-10 mx-auto text-center">
+            <h2 class="accent-heading mb-4 animate-fade-in">Start Your Smart Farming Journey Today</h2>
+            <p class="lead mb-5 animate-fade-in delay-200">Join thousands of farmers who are already using Agriculture Hub to improve their yields, reduce costs, and make data-driven decisions.</p>
+            <a href="#features" class="btn btn-lg btn-success btn-icon animate-fade-in delay-300">
+                <i class="bi bi-arrow-right-circle"></i> Get Started Now
+            </a>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Add scroll animation for elements
+    document.addEventListener('DOMContentLoaded', function() {
+        const animateElements = document.querySelectorAll('.animate-fade-in, .animate-fade-in-left, .animate-fade-in-right, .animate-zoom-in');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        animateElements.forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.observe(element);
+        });
+
+        // Add gradient text effect
+        const gradientElements = document.querySelectorAll('.text-gradient-primary');
+        gradientElements.forEach(element => {
+            element.style.background = 'linear-gradient(135deg, #4caf50, #1b5e20)';
+            element.style.webkitBackgroundClip = 'text';
+            element.style.webkitTextFillColor = 'transparent';
+            element.style.backgroundClip = 'text';
+            element.style.color = 'transparent';
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}
